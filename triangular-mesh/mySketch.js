@@ -1,22 +1,11 @@
 //generativeartistry.com/tutorials/triangular-mesh/
 // ty <3 ruth & tim
 
-
-// var canvas = document.querySelector('canvas');
-// var ctx = canvas.getContext('2d');
-
 var [size_x, size_y] = [3840, 2160];
 var [size_x, size_y] = [500, 500];
-// var size = size_x;
 var disturbance = 0.3;
 var n_triangles_per_side = 20;
-var dpr = window.devicePixelRatio;
-// canvas.width = size_x * dpr;
-// canvas.height = size_y * dpr;
-// ctx.scale(dpr, dpr);
-// ctx.lineJoin = 'bevel';
 
-// let noise = p5.prototype.noise;
 
 function clip(v, minv, maxv) {
 	if (v < minv) return minv;
@@ -98,10 +87,6 @@ function drawPatternOnce() {
 	var dotLine;
 	odd = true;
 
-
-
-
-
 	for (var y = 0; y < lines.length - 1; y++) {
 		odd = !odd;
 		dotLine = [];
@@ -120,7 +105,6 @@ function drawPatternOnce() {
 			stroke(color);
 			strokeWeight(1);
 			triangle(...coords);
-			// drawTriangle(vertices, colorByPoint(middle(vertices)));
 		}
 	}
 }
