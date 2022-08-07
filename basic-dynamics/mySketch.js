@@ -1,16 +1,24 @@
-var canvas = document.querySelector('canvas');
-var ctx = canvas.getContext('2d');
+// var canvas = document.querySelector('canvas');
+// var ctx = canvas.getContext('2d');
 
 var [size_x, size_y] = [3840, 2160];
 var [size_x, size_y] = [500, 500];
-var size = size_x;
+// var size = size_x;
 var disturbance = 0.3;
 var n_triangles_per_side = 20;
 var dpr = window.devicePixelRatio;
-canvas.width = size_x * dpr;
-canvas.height = size_y * dpr;
-ctx.scale(dpr, dpr);
-ctx.lineJoin = 'bevel';
+// canvas.width = size_x * dpr;
+// canvas.height = size_y * dpr;
+// ctx.scale(dpr, dpr);
+// ctx.lineJoin = 'bevel';
+
+// let noise = p5.prototype.noise;
+
+function setup() {
+	createCanvas(size_x, size_y);
+	background("#000");
+	noStroke();
+}
 
 
 
@@ -118,15 +126,15 @@ class Point {
 	}
 }
 
-function circle(point, radius, color) {
-	ctx.beginPath();
-	ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
-	ctx.closePath();
-	if (color !== undefined) {
-		ctx.fillStyle = color;
-		ctx.fill();
-	}
-}
+// function circle(point, radius, color) {
+// 	ctx.beginPath();
+// 	ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+// 	ctx.closePath();
+// 	if (color !== undefined) {
+// 		ctx.fillStyle = color;
+// 		ctx.fill();
+// 	}
+// }
 
 // Takes an array and a number of needed minimal values
 // returns an array of pairs [[min_index, value_at_that_index]]
@@ -176,14 +184,15 @@ class Dynamics {
 
 class PerlinDynamics {
 	constructor(q, qdot) {
-		this.q = q;
+		this.qinit = q;
+		this.q = q.copy();
 		this.qdot = qdot;
 	}
 	
 	step(frame_s, elapsed_s) {
 		console.assert(frame_s !== undefined);
-		this.q.x = 200 + noise(elapsed_s*0.2)*100;
-		this.q.y = 200 + noise(elapsed_s*0.2, 20)*100;
+		this.q.x = this.qinit.x + map(noise(elapsed_s*0.2), 0, 1, -1, 1)*100;
+		this.q.y = this.qinit.y + map(noise(elapsed_s*0.2, 20), 0, 1, -1, 1)*100;
 	}
 }
 
@@ -191,7 +200,8 @@ class PerlinDynamics {
 let d = new PerlinDynamics(new Point(100, 200), new Point(10, 300));
 
 let start, previousTimeStamp;
-function draw(timestamp) {
+function draw() {
+	var timestamp = millis();
 	if (start === undefined) {
 		start = timestamp;
 	}
@@ -203,12 +213,15 @@ function draw(timestamp) {
 	if (previousTimeStamp !== undefined) {
 		d.step(frame_s, elapsed_s);
 	}
-	fillBg("#000");
-	circle(d.q.getProjectedToCanvas(), 10, "#ffff00")
+	// fillBg("#000");
+	background("#00000001");
+	fill( "#ffff00");
+	var center = d.q.getProjectedToCanvas();
+	ellipse(center.x, center.y, 10, 10);
 	
 	// final housekeeping
 	previousTimeStamp = timestamp;
-	window.requestAnimationFrame(draw);
+	// window.requestAnimationFrame(draw);
 }
 
-window.requestAnimationFrame(draw);
+// window.requestAnimationFrame(draw);
