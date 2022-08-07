@@ -1,26 +1,14 @@
-// var canvas = document.querySelector('canvas');
-// var ctx = canvas.getContext('2d');
 
 var [size_x, size_y] = [3840, 2160];
 var [size_x, size_y] = [500, 500];
-// var size = size_x;
-var disturbance = 0.3;
-var n_triangles_per_side = 20;
-var dpr = window.devicePixelRatio;
-// canvas.width = size_x * dpr;
-// canvas.height = size_y * dpr;
-// ctx.scale(dpr, dpr);
-// ctx.lineJoin = 'bevel';
 
-// let noise = p5.prototype.noise;
+var disturbance = 0.3;
 
 function setup() {
 	createCanvas(size_x, size_y);
 	background("#000");
 	noStroke();
 }
-
-
 
 function clip(v, minv, maxv) {
 	if (v < minv) return minv;
@@ -31,11 +19,11 @@ function clip(v, minv, maxv) {
 let realMod = v => v - Math.floor(v);
 
 function hslFracToColor(h, s, l) {
-	return "hsl(" +
-		realMod(h) * 360 + ", " +
-		clip(s, 0, 1) * 100 + "%, " +
-		clip(l, 0, 1) * 100 + "%" +
-		")";
+	return color("hsl(" +
+		(realMod(h) * 360).toFixed(0) + ", " +
+		(clip(s, 0, 1)*100).toFixed(0) + "%, " +
+		(clip(l, 0, 1)*100).toFixed(0) + "%" +
+		")");	
 }
 
 function colorFracToHex(frac_orig) {
@@ -126,16 +114,6 @@ class Point {
 	}
 }
 
-// function circle(point, radius, color) {
-// 	ctx.beginPath();
-// 	ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
-// 	ctx.closePath();
-// 	if (color !== undefined) {
-// 		ctx.fillStyle = color;
-// 		ctx.fill();
-// 	}
-// }
-
 // Takes an array and a number of needed minimal values
 // returns an array of pairs [[min_index, value_at_that_index]]
 function argminN(ar, n) {
@@ -156,19 +134,12 @@ function argminN(ar, n) {
 }
 
 function getPointColor(point, colorPoints) {
-	let distances = colorPoints.map(cp => cp.p.distance(point));
+	let distances = colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
 	let closest = argminN(distances, 3);
-	// let pairs = closest.map (v => [colorPoints[v[0]].c, size_x + size_y - v[1]]);
 	let pairs = closest.map(v => [colorPoints[v[0]].c, v[1] ** (-2)]);
 	return Color.mixMany(...pairs);
 
 }
-
-function fillBg(color){
-	ctx.fillStyle = color;
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
 class Dynamics {
 	constructor(q, qdot) {
 		this.q = q;
@@ -177,7 +148,7 @@ class Dynamics {
 	
 	step(frame_s, elapsed_s) {
 		console.assert(frame_s !== undefined);
-		let dq = this.qdot.copy().scale(frame_s);
+		let dq = this.qdot.copy().mult(frame_s);
 		this.q.add(dq);
 	}
 }
@@ -197,13 +168,15 @@ class PerlinDynamics {
 }
 
 // Initialization
-let d = new PerlinDynamics(new Point(100, 200), new Point(10, 300));
+let d = new PerlinDynamics(new p5.Vector(100, 200), new p5.Vector(10, 300));
 
-let start, previousTimeStamp;
+var start, previousTimeStamp;
 function draw() {
 	var timestamp = millis();
 	if (start === undefined) {
 		start = timestamp;
+		previousTimeStamp = timestamp;
+		return;
 	}
 	const elapsed_ms = timestamp - start;
 	const elapsed_s = elapsed_ms / 1000;
@@ -213,15 +186,11 @@ function draw() {
 	if (previousTimeStamp !== undefined) {
 		d.step(frame_s, elapsed_s);
 	}
-	// fillBg("#000");
 	background("#00000001");
 	fill( "#ffff00");
-	var center = d.q.getProjectedToCanvas();
+	var center = d.q;
 	ellipse(center.x, center.y, 10, 10);
 	
 	// final housekeeping
 	previousTimeStamp = timestamp;
-	// window.requestAnimationFrame(draw);
 }
-
-// window.requestAnimationFrame(draw);
