@@ -3,7 +3,7 @@
 
 var [size_x, size_y] = [3840, 2160];
 var [size_x, size_y] = [500, 500];
-var disturbance = 0.3;
+var disturbance = 0.6;
 var n_triangles_per_side = 20;
 
 
@@ -62,6 +62,23 @@ function randomIn(left, right) {
 	return left + Math.random()*(right - left);
 }
 
+class PerlinDynamics {
+	constructor(q, sz, tempo) {
+		this.qinit = q;
+		this.q = q.copy();
+		this.sz = sz;
+		this.tempo = tempo;
+		this.seed = randomIn(0, 1000);
+		this.step(0, 0);
+	}
+	
+	step(frame_s, elapsed_s) {
+		console.assert(frame_s !== undefined);
+		this.q.x = this.qinit.x + map(noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
+		this.q.y = this.qinit.y + map(noise(elapsed_s/this.tempo, this.seed, 20), 0, 1, -1, 1)*this.sz.y;
+	}
+}
+
 function drawPatternOnce() {
 	var line, dot,
 	odd = false,
@@ -76,16 +93,21 @@ function drawPatternOnce() {
 				x: x + (odd ? gap / 2 : 0),
 				y: y
 			};
-			line.push({
-				x: x + (2 * Math.random() - 1.0) * disturbance * gap + (odd ? gap / 2 : 0),
-				y: y + (2 * Math.random() - 1.0) * disturbance * gap
-			});
+			line.push(new PerlinDynamics(new p5.Vector(
+					x + (odd ? gap / 2 : 0),
+					y 
+				), new p5.Vector(
+					disturbance * gap,
+					disturbance * gap,
+				),
+				5
+			));
 		}
 		lines.push(line);
 	}
 
 	var dotLine;
-	odd = true;
+	odd = true; 
 
 	for (var y = 0; y < lines.length - 1; y++) {
 		odd = !odd;
@@ -98,9 +120,9 @@ function drawPatternOnce() {
 			var vertices = [dotLine[i], dotLine[i + 1], dotLine[i + 2]];
 			var coords = [];
 			for (let v of vertices.values()) {
-				coords = coords.concat([v.x, v.y])
+				coords = coords.concat([v.q.x, v.q.y])
 			}
-			const color = colorByPoint(middle(vertices))
+			const color = colorByPoint(middle(vertices.map(pd => pd.q)))
 			fill(color);
 			stroke(color);
 			strokeWeight(1);

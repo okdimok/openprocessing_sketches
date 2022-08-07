@@ -158,12 +158,13 @@ class PerlinDynamics {
 		this.qinit = q;
 		this.q = q.copy();
 		this.qdot = qdot;
+		this.step(0, 0);
 	}
 	
 	step(frame_s, elapsed_s) {
 		console.assert(frame_s !== undefined);
-		this.q.x = this.qinit.x + map(noise(elapsed_s*0.2), 0, 1, -1, 1)*100;
-		this.q.y = this.qinit.y + map(noise(elapsed_s*0.2, 20), 0, 1, -1, 1)*100;
+		this.q.x = this.qinit.x + map(noise(elapsed_s*0.2), 0, 1, -1, 1)*this.qdot.x;
+		this.q.y = this.qinit.y + map(noise(elapsed_s*0.2, 20), 0, 1, -1, 1)*this.qdot.y;
 	}
 }
 
