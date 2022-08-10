@@ -1,0 +1,173 @@
+var okdimokPrimitives = function (sketch) {
+    let s = sketch;
+
+    this.randomIn = function randomIn (left, right) {
+        return left + Math.random()*(right - left);
+    }
+
+    function clip (v, minv, maxv) {
+        if (v < minv) return minv;
+        if (v > maxv) return maxv;
+        return v;
+    }
+
+    this.realMod = v => v - Math.floor(v);
+
+    this.hslFracToColor = function (h, s, l) {
+        return color("hsl(" +
+            (realMod(h) * 360).toFixed(0) + ", " +
+            (clip(s, 0, 1)*100).toFixed(0) + "%, " +
+            (clip(l, 0, 1)*100).toFixed(0) + "%" +
+            ")");	
+    }
+
+    this.colorFracToHex = function (frac_orig) {
+        var frac = clip(frac_orig, 0, 0.999)
+        var s = Math.floor(frac * 256).toString(16);
+        if (s.length == 1) return "0" + s;
+        if (s.length == 2) return s;
+        return "00";
+    }
+
+    this.ColorPoint = class ColorPoint {
+        constructor(point, color) {
+            this.p = point;
+            this.c = color;
+        }
+    }
+
+    this.Color = class Color {
+        constructor(r, g, b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.channels = ["r", "g", "b"];
+        }
+
+        mix(other, ratio) {
+            if (ratio == undefined) ratio = 0.5;
+            let result = new Color();
+            for (let c in this.channels) {
+                result[c] = this[c] * (1 - ratio) + other[c] * ratio;
+            }
+        }
+
+        getHex() {
+            return "#" +
+                colorFracToHex(this.r) +
+                colorFracToHex(this.g) +
+                colorFracToHex(this.b);
+        }
+
+        static mixMany(...colors) {
+            let result = new Color();
+            var ratios = colors.map(c => c[1]);
+            var total = ratios.reduce((partialSum, r) => partialSum + r, 0);
+            ratios = ratios.map(r => r / total);
+            for (var ch of Object.values(result.channels)) {
+                result[ch] = 0.0;
+                for (let i = 0; i < colors.length; i++) {
+                    result[ch] += ratios[i] * colors[i][0][ch];
+                }
+            }
+            return result;
+        }
+    }
+
+    this.Point = class Point {
+        constructor (x, y) {
+            console.assert(false, "deprecated")
+            this.x = x;
+            this.y = y;
+        }
+
+        distance (other) {
+            return Math.sqrt(this.distanceSqr(other));
+        }
+        
+        distanceSqr (other) {
+            return ((this.x - other.x) ** 2 + (this.y - other.y) ** 2);
+        }
+        
+        add (other) {
+            this.x += other.x;
+            this.y += other.y;
+            return this
+        }
+        
+        scale (s) {
+            this.x *= s;
+            this.y *= s;
+            return this;
+        }
+        
+        getProjectedToCanvas(){
+            return new Point(this.x % size_x, this.y % size_y);
+        }
+        
+        copy() {
+            return new Point(this.x, this.y);
+        }
+    }
+
+    // Takes an array and a number of needed minimal values
+    // returns an array of pairs [[min_index, value_at_that_index]]
+    this.argminN = function (ar, n) {
+        let minPairs = [];
+        for (var [k, v] of Object.entries(ar)) {
+            if (minPairs.length < n) {
+                minPairs.push([k, v])
+            } else {
+                if (v < minPairs[n - 1][1]) {
+                    minPairs[n - 1] = [k, v];
+                } else {
+                    continue;
+                }
+            }
+            minPairs.sort((a, b) => a[1] - b[1]);
+        }
+        return minPairs;
+    }
+
+    this.getPointColor = function (point, colorPoints) {
+        let distances = colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
+        let closest = argminN(distances, 3);
+        let pairs = closest.map(v => [colorPoints[v[0]].c, v[1] ** (-2)]);
+        return Color.mixMany(...pairs);
+
+    }
+
+    this.Dynamics = class Dynamics {
+        constructor(q, qdot) {
+            this.q = q;
+            this.qdot = qdot;
+        }
+        
+        step(frame_s, elapsed_s) {
+            console.assert(frame_s !== undefined);
+            let dq = this.qdot.copy().mult(frame_s);
+            this.q.add(dq);
+        }
+    }
+
+    this.PerlinDynamics = function () {
+        let utils = this;
+        return class PerlinDynamics {
+            constructor(q, sz, tempo) {
+                this.qinit = q;
+                this.q = q.copy();
+                this.sz = sz;
+                this.tempo = tempo;
+                this.seed = utils.randomIn(0, 10000);
+                this.step(0, 0);
+            }
+            
+            step(frame_s, elapsed_s) {
+                console.assert(frame_s !== undefined);
+                this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
+                this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, 20), 0, 1, -1, 1)*this.sz.y;
+            }
+        }
+    }
+
+};
