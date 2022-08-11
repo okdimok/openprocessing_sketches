@@ -14,7 +14,7 @@ let myp5 = new p5(( sketch ) => {
     }
 
     // Initialization
-    var d = new (utils.PerlinDynamics())(new p5.Vector(100, 200), new p5.Vector(100, 300), 5.);
+    var d = new utils.PerlinDynamics(new p5.Vector(100, 200), new p5.Vector(100, 300), 5.);
 
     var start, previousTimeStamp;
     s.draw = function(){

@@ -1,5 +1,6 @@
 var okdimokPrimitives = function (sketch) {
     let s = sketch;
+    let utils = this;
 
     this.randomIn = function randomIn (left, right) {
         return left + Math.random()*(right - left);
@@ -150,24 +151,22 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
-    this.PerlinDynamics = function () {
-        let utils = this;
-        return class PerlinDynamics {
-            constructor(q, sz, tempo) {
-                this.qinit = q;
-                this.q = q.copy();
-                this.sz = sz;
-                this.tempo = tempo;
-                this.seed = utils.randomIn(0, 10000);
-                this.step(0, 0);
-            }
-            
-            step(frame_s, elapsed_s) {
-                console.assert(frame_s !== undefined);
-                this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
-                this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, 20), 0, 1, -1, 1)*this.sz.y;
-            }
+    this.PerlinDynamics = class PerlinDynamics {
+        constructor(q, sz, tempo) {
+            this.qinit = q;
+            this.q = q.copy();
+            this.sz = sz;
+            this.tempo = tempo;
+            this.seed = utils.randomIn(0, 10000);
+            this.step(0, 0);
         }
+        
+        step(frame_s, elapsed_s) {
+            console.assert(frame_s !== undefined);
+            this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
+            this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, 20), 0, 1, -1, 1)*this.sz.y;
+        }
+        
     }
 
 };
