@@ -1,5 +1,5 @@
 
-let myp5 = new p5(( sketch ) => {
+let basic_dynamics = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
     var [size_x, size_y] = [3840, 2160];
@@ -40,4 +40,4 @@ let myp5 = new p5(( sketch ) => {
         // final housekeeping
         previousTimeStamp = timestamp;
     }
-});
+};
