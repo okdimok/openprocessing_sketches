@@ -55,9 +55,9 @@ var okdimokPrimitives = function (sketch) {
 
         getHex() {
             return "#" +
-                colorFracToHex(this.r) +
-                colorFracToHex(this.g) +
-                colorFracToHex(this.b);
+                utils.colorFracToHex(this.r) +
+                utils.colorFracToHex(this.g) +
+                utils.colorFracToHex(this.b);
         }
 
         static mixMany(...colors) {
