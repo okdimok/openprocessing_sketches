@@ -6,7 +6,7 @@ var okdimokPrimitives = function (sketch) {
         return left + Math.random()*(right - left);
     }
 
-    function clip (v, minv, maxv) {
+    this.clip = function (v, minv, maxv) {
         if (v < minv) return minv;
         if (v > maxv) return maxv;
         return v;
@@ -15,10 +15,10 @@ var okdimokPrimitives = function (sketch) {
     this.realMod = v => v - Math.floor(v);
 
     this.hslFracToColor = function (h, s, l) {
-        return color("hsl(" +
-            (realMod(h) * 360).toFixed(0) + ", " +
-            (clip(s, 0, 1)*100).toFixed(0) + "%, " +
-            (clip(l, 0, 1)*100).toFixed(0) + "%" +
+        return sketch.color("hsl(" +
+            (this.realMod(h) * 360).toFixed(0) + ", " +
+            (this.clip(s, 0, 1)*100).toFixed(0) + "%, " +
+            (this.clip(l, 0, 1)*100).toFixed(0) + "%" +
             ")");	
     }
 
@@ -110,6 +110,19 @@ var okdimokPrimitives = function (sketch) {
             return new Point(this.x, this.y);
         }
     }
+
+    this.middle = function (vertices){
+        var middle = {};
+        const s = 1.0/vertices.length;
+        for (const v in vertices) {
+            for (const k in vertices[v]) {
+                if (!(k in middle)) middle[k] = 0.0;
+                middle[k] += s * vertices[v][k];
+            }
+        }
+        return middle;
+    }
+    
 
     // Takes an array and a number of needed minimal values
     // returns an array of pairs [[min_index, value_at_that_index]]
