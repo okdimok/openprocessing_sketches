@@ -23,7 +23,7 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.colorFracToHex = function (frac_orig) {
-        var frac = clip(frac_orig, 0, 0.999)
+        var frac = this.clip(frac_orig, 0, 0.999)
         var s = Math.floor(frac * 256).toString(16);
         if (s.length == 1) return "0" + s;
         if (s.length == 2) return s;
@@ -111,7 +111,7 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
-    this.middle = function (vertices){
+    this.middle0 = function (vertices){
         var middle = {};
         const s = 1.0/vertices.length;
         for (const v in vertices) {
@@ -122,7 +122,16 @@ var okdimokPrimitives = function (sketch) {
         }
         return middle;
     }
-    
+
+    this.middle = function (points){
+        let middle = new p5.Vector();
+        for (const p of points) {
+            middle.add(p);
+        }
+        middle.mult(1.0/points.length);
+        return middle;
+    }    
+
 
     // Takes an array and a number of needed minimal values
     // returns an array of pairs [[min_index, value_at_that_index]]
@@ -151,6 +160,21 @@ var okdimokPrimitives = function (sketch) {
 
     }
 
+    this.SpatialGradient = class SpatialGradient {
+        constructor(colorPoints, n_closest, distance_mapping) {
+            this.colorPoints = colorPoints;
+            this.n_closest = n_closest;
+            this.distance_mapping = distance_mapping !== undefined ? distance_mapping : v => v**(-2);
+        }
+
+        getPointColor(point){
+            let distances = this.colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
+            let closest = utils.argminN(distances, this.n_closest);
+            let pairs = closest.map(v => [this.colorPoints[v[0]].c, this.distance_mapping(v[1])]);
+            return utils.Color.mixMany(...pairs);
+        }
+    }
+
     this.Dynamics = class Dynamics {
         constructor(q, qdot) {
             this.q = q;
@@ -171,13 +195,14 @@ var okdimokPrimitives = function (sketch) {
             this.sz = sz;
             this.tempo = tempo;
             this.seed = utils.randomIn(0, 10000);
+            this.seed2 = utils.randomIn(1000, 10000);
             this.step(0, 0);
         }
         
         step(frame_s, elapsed_s) {
             console.assert(frame_s !== undefined);
             this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
-            this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, 20), 0, 1, -1, 1)*this.sz.y;
+            this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, this.seed2), 0, 1, -1, 1)*this.sz.y;
         }
         
     }
