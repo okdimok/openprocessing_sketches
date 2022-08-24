@@ -10,7 +10,7 @@ let triangular_mesh = function ( sketch ) {
     var disturbance = 0.3;
 	var n_triangles_per_side = 20;
 
-	this.drawPatternOnce = function() {
+	this.prepareNewGrid = function() {
 		var line, dot,
 		odd = false,
 		lines = [],
@@ -36,7 +36,10 @@ let triangular_mesh = function ( sketch ) {
 			}
 			lines.push(line);
 		}
-	
+		return lines;
+	}
+
+	this.drawPatternOnAGrid = function () {
 		var dotLine;
 		odd = true; 
 	
@@ -60,6 +63,30 @@ let triangular_mesh = function ( sketch ) {
 				s.triangle(...coords);
 			}
 		}
+	}
+
+	var prev = s.millis(), curr = s.millis();
+	this.stepGrid = function (){
+		curr = s.millis();
+		for (var y = 0; y < lines.length - 1; y++) {
+			odd = !odd;
+			dotLine = [];
+			for (var i = 0; i < lines[y].length; i++) {
+				lines[y][i].step(curr/1000, (curr-prev)/1000);
+			}
+		}
+		prev = curr;
+
+	}
+
+	this.draw = function(){
+		this.stepGrid();
+		this.drawPatternOnAGrid();
+	}
+
+	this.drawPatternOnce = function() {
+		this.prepareNewGrid();
+		this.drawPatternOnAGrid();
 	};
 
 	function colorByPoint(point) {
@@ -84,7 +111,7 @@ let triangular_mesh = function ( sketch ) {
 		drawPatternOnce()
     }
 
-	s.mouseClicked = function(){
+	s.mouseClicked = function() {
 		drawPatternOnce();
 	}
 	

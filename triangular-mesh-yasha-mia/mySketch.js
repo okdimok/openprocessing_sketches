@@ -5,8 +5,8 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
     // var [size_x, size_y] = [3840, 2160];
-	// var dpi = 200;
-	var dpi = 600;
+	var dpi = 100;
+	// var dpi = 600;
     var [size_x, size_y] = [Math.floor(8.3*dpi), Math.floor(11.7*dpi)];
     // var [size_x, size_y] = [500, 500];
 
@@ -30,30 +30,11 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 		}
 	}
 
-	this.drawPatternOnce = function() {
-		// let colorPoints = [];
-		// for (var i = 0; i < n_points/2; i++){
-		// 	colorPoints.push(new utils.ColorPoint(new p5.Vector(
-		// 			utils.randomIn(0, size_x),
-		// 			utils.randomIn(0, size_y)
-		// 		),
-		// 		new utils.Color(0, 0.8, 0.6)
-		// 	))
-		// }
-		// for (var i = 0; i < n_points/2; i++){
-		// 	colorPoints.push(new utils.ColorPoint(new p5.Vector(
-		// 			utils.randomIn(0, size_x),
-		// 			utils.randomIn(0, size_y)
-		// 		),
-		// 		new utils.Color(1., 1., 1.)
-		// 	))
-		// }
-		// spatialGradient = new utils.SpatialGradient(colorPoints, 3);
-
+	this.prepareNewGrid = function() {
 		var line, dot,
 		odd = false,
-		lines = [],
 		gap = size_x / n_triangles_per_side;
+		lines=[];
 	
 		for (var y = - gap / 2; y <= size_y + 3*gap; y += gap) {
 			odd = !odd;
@@ -70,12 +51,16 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 						disturbance * gap,
 						disturbance * gap,
 					),
-					5
+					5.
 				));
 			}
 			lines.push(line);
 		}
-	
+	}
+
+	var lines=[];
+
+	this.drawPatternOnAGrid = function () {
 		var dotLine;
 		odd = true; 
 	
@@ -103,7 +88,7 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 		for (var y = 0; y < lines.length - 1; y++) {
 			for (var i = 0; i < lines[y].length; i++) {
 				let p = lines[y][i].q;
-				if (Math.random() < 0.5) {
+				if (Math.random() < 0.99) {
 					s.fill("#fff")
 					// s.fill(yashaMiaColor())
 					s.stroke(yashaMiaColor())
@@ -113,7 +98,30 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 				}
 			}
 		}
+	}
 
+	this.drawPatternOnce = function() {
+		// let colorPoints = [];
+		// for (var i = 0; i < n_points/2; i++){
+		// 	colorPoints.push(new utils.ColorPoint(new p5.Vector(
+		// 			utils.randomIn(0, size_x),
+		// 			utils.randomIn(0, size_y)
+		// 		),
+		// 		new utils.Color(0, 0.8, 0.6)
+		// 	))
+		// }
+		// for (var i = 0; i < n_points/2; i++){
+		// 	colorPoints.push(new utils.ColorPoint(new p5.Vector(
+		// 			utils.randomIn(0, size_x),
+		// 			utils.randomIn(0, size_y)
+		// 		),
+		// 		new utils.Color(1., 1., 1.)
+		// 	))
+		// }
+		// spatialGradient = new utils.SpatialGradient(colorPoints, 3);
+	
+		this.prepareNewGrid();
+		this.drawPatternOnAGrid();
 
 		// this.add_monkeypox(n_triangles_per_side, 0.05*dpi);
 
@@ -127,6 +135,23 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 		// 	}
 		// }
 	};
+
+	var prev = s.millis(), curr = s.millis();
+	this.stepGrid = function (){
+		curr = s.millis();
+		for (var y = 0; y < lines.length - 1; y++) {
+			for (var i = 0; i < lines[y].length; i++) {
+				lines[y][i].step((curr-prev)/1000., curr/1000.);
+			}
+		}
+		prev = curr;
+
+	}
+
+	this.draw = function(){
+		this.stepGrid();
+		this.drawPatternOnAGrid();
+	}
 
 	function yashaMiaColor() {
 		if (Math.random() > 0.5) 
@@ -150,13 +175,32 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 			);
 	}
 
+
+	function yashaMiaColorNoise(point) {
+		let gap = size_x / n_triangles_per_side;
+		let factor = gap;
+		if (s.noise(point.x/factor, point.y/factor, 0) > 0.5) 
+			return utils.hslFracToColor(
+				174/360,
+				s.map(s.noise(point.x/factor, point.y/factor), 0.2, 0.8, 0.8, 1.0),
+				s.map(s.noise(point.y/factor, point.x/factor), 0.2, 0.8, 0.4, 1.0),
+			);
+		else
+			return utils.hslFracToColor(
+				35/360,
+				s.map(s.noise(point.x/factor, point.y/factor, 30), 0.2, 0.8, 0.8, 1.0),
+				s.map(s.noise(point.y/factor, point.x/factor, 30), 0.2, 0.8, 0.5, 1.0),
+			);
+	}
+
 	function colorByPoint(point) {
 		// return "#ff0000";
 		// return color = '#' +
-		// 	colorFracToHex(Math.random()) +
-		// 	colorFracToHex(point.x/size) +
-		// 	colorFracToHex(point.y/size);
+		// 	utils.colorFracToHex() +
+		// 	utils.colorFracToHex(point.x/size_x) +
+		// 	utils.colorFracToHex(point.y/size_y);
 		// return spatialGradient.getPointColor(point).getHex();
+		return yashaMiaColorNoise(point);
 		return yashaMiaColor();
 
 	}
