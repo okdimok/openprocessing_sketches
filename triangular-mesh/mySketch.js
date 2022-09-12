@@ -10,6 +10,8 @@ let triangular_mesh = function ( sketch ) {
     var disturbance = 0.3;
 	var n_triangles_per_side = 20;
 
+	var lines=[];
+
 	this.prepareNewGrid = function() {
 		var line, dot,
 		odd = false,
@@ -85,7 +87,7 @@ let triangular_mesh = function ( sketch ) {
 	}
 
 	this.drawPatternOnce = function() {
-		this.prepareNewGrid();
+		lines = this.prepareNewGrid();
 		this.drawPatternOnAGrid();
 	};
 
