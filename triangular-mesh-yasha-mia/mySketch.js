@@ -7,7 +7,7 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
     // var [size_x, size_y] = [3840, 2160];
 	var dpi = 100;
 	// var dpi = 600;
-    var [size_x, size_y] = [Math.floor(8.3*dpi), Math.floor(11.7*dpi)];
+    var [size_x, size_y] = utils.getPaperSizeInPixes("a4", dpi);
     // var [size_x, size_y] = [500, 500];
 
     var disturbance = 0.8;
@@ -63,6 +63,7 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 	this.drawPatternOnAGrid = function () {
 		var dotLine;
 		odd = true; 
+		let gap = size_x / n_triangles_per_side;
 	
 		for (var y = 0; y < lines.length - 1; y++) {
 			odd = !odd;
@@ -94,7 +95,7 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 					s.stroke(yashaMiaColor())
 					// s.strokeWeight(dpi/200)
 					s.noStroke()
-					s.circle(p.x, p.y, 0.05*dpi)
+					s.circle(p.x, p.y, 0.15*gap)
 				}
 			}
 		}
@@ -147,12 +148,7 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 		prev = curr;
 
 	}
-
-	this.draw = function(){
-		this.stepGrid();
-		this.drawPatternOnAGrid();
-	}
-
+	
 	function yashaMiaColor() {
 		if (Math.random() > 0.5) 
 			return utils.hslFracToColor(
@@ -205,27 +201,54 @@ let triangular_mesh_yasha_mia = function ( sketch ) {
 
 	}
 	
-
+	var fullscreen = false;
+	s.draw = function(){
+		if (fullscreen) {
+			stepGrid();
+			drawPatternOnAGrid();
+		}
+	}
+	
     s.setup = function() {
-        s.createCanvas(size_x, size_y);
+		s.createCanvas(size_x, size_y);
         s.background("#000");
 		drawPatternOnce()
     }
 
 	s.mouseClicked = function(){
-		if (s.mouseX < size_x/2) {
-			let fs = s.fullscreen();
-    		s.fullscreen(!fs);
+		if (fullscreen) {this.make_a4();}
+		else {this.make_fullscreen()}
+	}
+	
+	s.windowResized = function() {
+		if (fullscreen) {
+			[size_x, size_y] = [s.windowWidth, s.windowHeight];
+			s.resizeCanvas(size_x, size_y);
+			drawPatternOnce();
 		}
+	}	
+	
+	s.make_fullscreen = function() {
+		fullscreen = true;
+		s.fullscreen(fullscreen);
+		document.querySelector("body").style.overflow= "hidden";
+		// document.querySelector("#make-fullscreen").style.display= "none";
+		// document.querySelector("#make-a4").style.display= "block";
+		[size_x, size_y] = [s.windowWidth, s.windowHeight];
+		s.resizeCanvas(size_x, size_y);
 		drawPatternOnce();
 	}
 
-	s.windowResized = function() {
-		s.resizeCanvas(s.windowWidth, s.windowHeight);
-		[size_x, size_y] = [s.windowWidth, s.windowHeight];
-		document.querySelector("body").style.overflow= "hidden";
+	s.make_a4 = function() {
+		fullscreen = false;
+		s.fullscreen(fullscreen);
+		document.querySelector("body").style.overflowY= "scroll";
+		// document.querySelector("#make-a4").style.display= "none";
+		// document.querySelector("#make-fullscreen").style.display= "block";
+		[size_x, size_y] = utils.getPaperSizeInPixes("a4", dpi);
+		s.resizeCanvas(size_x, size_y);
 		drawPatternOnce();
-	  }
+	}
 	
 }
 

@@ -2,6 +2,22 @@ var okdimokPrimitives = function (sketch) {
     let s = sketch;
     let utils = this;
 
+    this.getPaperSizeInPixes = function (paper, dpi, landscape) {
+        let paper_size_mm = {
+            a2: [420, 594],
+            a3: [297, 420],
+            a4: [210, 297],
+        }
+        let mm_per_inch = 25.4;
+        let sz = paper_size_mm[paper];
+        sz = sz.map(s => s/mm_per_inch*dpi);
+        if (landscape) {
+            return [sz[1], sz[0]]
+        } else {
+            return sz;
+        }
+    }
+
     this.randomIn = function randomIn (left, right) {
         return left + Math.random()*(right - left);
     }
