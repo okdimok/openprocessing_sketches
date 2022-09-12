@@ -11,6 +11,12 @@ let basic_dynamics = function ( sketch ) {
         s.createCanvas(size_x, size_y);
         s.background("#000");
         s.noStroke();
+        s.frameRate(20);
+        s.createLoop(3,
+            { noise: {},
+            gif: { fileName: "instanceMode.gif", open: true, render: false, options: {
+                workerScript: "../local-dev/gif.worker.js"
+            } } })
     }
 
     // Initialization
