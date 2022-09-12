@@ -14,9 +14,7 @@ let basic_dynamics = function ( sketch ) {
         s.frameRate(20);
         s.createLoop(3,
             { noise: {},
-            gif: { fileName: "instanceMode.gif", open: true, render: false, options: {
-                workerScript: "../local-dev/gif.worker.js"
-            } } })
+            gif: { fileName: "instanceMode.gif", open: true, render: false } })
     }
 
     // Initialization
