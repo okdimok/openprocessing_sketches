@@ -223,4 +223,23 @@ var okdimokPrimitives = function (sketch) {
         
     }
 
+    this.LoopNoiseDynamics = class LoopNoiseDynamics {
+        constructor(q, sz, radius) {
+            this.qinit = q;
+            this.q = q.copy();
+            this.sz = sz;
+            this.radius = radius;
+            this.seed = utils.randomIn(0, 10);
+            this.seed2 = utils.randomIn(10, 100);
+            this.step(0, 0);
+        }
+        
+        step(frame_s, elapsed_s) {
+            console.assert(frame_s !== undefined);
+            this.q.x = this.qinit.x + s.animLoop.noise({radius:this.radius, seed: this.seed})*this.sz.x; 
+            this.q.y = this.qinit.y + s.animLoop.noise({radius:this.radius, seed: this.seed2})*this.sz.y;
+        }
+        
+    }
+
 };
