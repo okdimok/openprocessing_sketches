@@ -191,31 +191,51 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
-    this.Dynamics = class Dynamics {
-        constructor(q, qdot) {
+    this.BasicDynamics = class BasicDynamics {
+        constructor(q) {
             this.q = q;
-            this.qdot = qdot;
+            this.prev_time = undefined;
         }
         
-        step(frame_s, elapsed_s) {
+        frame_time(millis){
+            let frame_time = millis - this.prev_time;
+            this.prev_time = millis;
+            return frame_time;
+        }
+        
+        step(millis) {
+            this.frame_time(millis);
+        }
+    }
+
+    this.LinearDynamics = class LinearDynamics extends this.BasicDynamics {
+        constructor(q, qdot) {
+            super(q);
+            this.qdot = qdot;
+        }
+                
+        step(millis) {
+            let frame_s = this.frame_time(millis)/ 1000;
             console.assert(frame_s !== undefined);
             let dq = this.qdot.copy().mult(frame_s);
             this.q.add(dq);
         }
     }
 
-    this.PerlinDynamics = class PerlinDynamics {
+    this.PerlinDynamics = class PerlinDynamics extends this.BasicDynamics {
         constructor(q, sz, tempo) {
-            this.qinit = q;
-            this.q = q.copy();
+            super(q);
+            this.qinit = q.copy();
             this.sz = sz;
             this.tempo = tempo;
             this.seed = utils.randomIn(0, 10000);
             this.seed2 = utils.randomIn(1000, 10000);
-            this.step(0, 0);
+            this.step(0);
         }
         
-        step(frame_s, elapsed_s) {
+        step(millis) {
+            let frame_s = this.frame_time(millis)/ 1000;
+            let elapsed_s = millis/1000;
             console.assert(frame_s !== undefined);
             this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
             this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, this.seed2), 0, 1, -1, 1)*this.sz.y;
@@ -223,19 +243,18 @@ var okdimokPrimitives = function (sketch) {
         
     }
 
-    this.LoopNoiseDynamics = class LoopNoiseDynamics {
+    this.LoopNoiseDynamics = class LoopNoiseDynamics extends this.BasicDynamics {
         constructor(q, sz, radius) {
-            this.qinit = q;
-            this.q = q.copy();
+            super(q);
+            this.qinit = q.copy();
             this.sz = sz;
             this.radius = radius;
             this.seed = utils.randomIn(0, 10);
             this.seed2 = utils.randomIn(10, 100);
-            this.step(0, 0);
+            this.step(0);
         }
         
-        step(frame_s, elapsed_s) {
-            console.assert(frame_s !== undefined);
+        step() {
             this.q.x = this.qinit.x + s.animLoop.noise({radius:this.radius, seed: this.seed})*this.sz.x; 
             this.q.y = this.qinit.y + s.animLoop.noise({radius:this.radius, seed: this.seed2})*this.sz.y;
         }

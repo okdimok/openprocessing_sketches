@@ -12,38 +12,25 @@ let basic_dynamics = function ( sketch ) {
         s.createCanvas(size_x, size_y);
         s.background("#000");
         s.noStroke();
-        s.frameRate(40);
-        s.createLoop(3,
-            { noise: {},
-            // gif: { open: true, render: false }
-         })
-        d = new utils.LoopNoiseDynamics(new p5.Vector(100, 200), new p5.Vector(100, 200), 0.2);
+        s.frameRate(50); // for best GIFs should be a multiplier of 100
+        s.createLoop(6,
+            {
+                noise: {},
+                gif: { fileName: "basicDynamics.gif", open: true, download: true, render: false, startLoop: 2, endLoop: 3 }
+            })
+        d = new utils.LoopNoiseDynamics(new p5.Vector(100, 200), new p5.Vector(100, 200), 0.5);
     }
 
     // Initialization
-
-    var start, previousTimeStamp;
-    s.draw = function(){
-        var timestamp = s.millis();
-        if (start === undefined) {
-            start = timestamp;
-            previousTimeStamp = timestamp;
-            return;
-        }
-        const elapsed_ms = timestamp - start;
-        const elapsed_s = elapsed_ms / 1000;
-        const frame_s = (timestamp - previousTimeStamp)/1000;
-        
+    s.draw = function(){       
         // main function body
-        if (previousTimeStamp !== undefined) {
-            d.step(frame_s, elapsed_s);
-        }
+        d.step(s.millis());
+
         s.background("#00000001");
         s.fill( "#ffff00");
         var center = d.q;
         s.ellipse(center.x, center.y, 10, 10);
         
         // final housekeeping
-        previousTimeStamp = timestamp;
     }
 };
