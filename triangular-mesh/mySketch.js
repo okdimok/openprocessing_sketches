@@ -72,13 +72,14 @@ let triangular_mesh = function ( sketch ) {
 	}
 
 	s.addPearls = function (){
+		let gap = size_x / n_triangles_per_side;
 		for (var y = 0; y < lines.length - 1; y++) {
 			for (var i = 0; i < lines[y].length; i++) {
 				let p = lines[y][i].q;
-				if (Math.random() < 0.99) {
+				if (true) {
 					s.fill("#fff")
 					// s.fill(yashaMiaColor())
-					// s.stroke(yashaMiaColor())
+					// s.stroke(yashaMiaColorNoise(undefined, i, y))
 					// s.strokeWeight(dpi/200)
 					s.noStroke()
 					s.circle(p.x, p.y, 0.15*gap)
@@ -98,6 +99,23 @@ let triangular_mesh = function ( sketch ) {
 		}
 	}
 
+	s.yashaMiaColorNoise = function (point, i, j) {
+		let gap = size_x / n_triangles_per_side;
+		let factor = gap;
+		if (s.animLoop.noise({seed: Math.PI*2*(j*n_triangles_per_side + i + 0.5), radius: noise_radius_color}) > 0.) 
+			return utils.hslFracToColor(
+				174/360,
+				s.map(s.animLoop.noise({seed: j*n_triangles_per_side + i + 0.5, radius: noise_radius_color}), -0.6, 0.6, 0.8, 1.0),
+				s.map(s.animLoop.noise({seed: j*n_triangles_per_side + i, radius: noise_radius_color}), -0.6, 0.6, 0.4, 1.0),
+			);
+		else
+			return utils.hslFracToColor(
+				35/360,
+				s.map(s.animLoop.noise({seed: j*n_triangles_per_side + i + 0.5, radius: noise_radius_color}), -0.6, 0.6, 0.8, 1.0),
+				s.map(s.animLoop.noise({seed: j*n_triangles_per_side + i, radius: noise_radius_color}), -0.6, 0.6, 0.5, 1.0),
+			);
+	}
+
 	var saved = false;
 	// https://github.com/spite/ccapture.js/#:~:text=The%20complete%20list%20of%20parameters%20is%3A
 	// WebM image quality from 0.0 (worst) to 0.99999 (best), 1.00 (VP8L lossless) is not supported
@@ -106,8 +124,9 @@ let triangular_mesh = function ( sketch ) {
 		if (s.animLoop.elapsedFramesTotal === 0) {
 			capturer.start()
 		}
-		this.stepGrid();
-		this.drawPatternOnAGrid();
+		s.stepGrid();
+		s.drawPatternOnAGrid();
+		s.addPearls();
 		if (s.animLoop.elapsedLoops == 0) {
 			capturer.capture(s.canvas);
 		} else if (!saved) {
@@ -128,6 +147,7 @@ let triangular_mesh = function ( sketch ) {
 		// 	colorFracToHex(Math.random()) +
 		// 	colorFracToHex(point.x/size) +
 		// 	colorFracToHex(point.y/size);
+		return s.yashaMiaColorNoise(point, i, j);
 		return utils.hslFracToColor(
 			// 0.05 + point.x/size/2.5
 			// randomIn(0.05, 0.1),

@@ -91,54 +91,6 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
-    this.Point = class Point {
-        constructor (x, y) {
-            console.assert(false, "deprecated")
-            this.x = x;
-            this.y = y;
-        }
-
-        distance (other) {
-            return Math.sqrt(this.distanceSqr(other));
-        }
-        
-        distanceSqr (other) {
-            return ((this.x - other.x) ** 2 + (this.y - other.y) ** 2);
-        }
-        
-        add (other) {
-            this.x += other.x;
-            this.y += other.y;
-            return this
-        }
-        
-        scale (s) {
-            this.x *= s;
-            this.y *= s;
-            return this;
-        }
-        
-        getProjectedToCanvas(){
-            return new Point(this.x % size_x, this.y % size_y);
-        }
-        
-        copy() {
-            return new Point(this.x, this.y);
-        }
-    }
-
-    this.middle0 = function (vertices){
-        var middle = {};
-        const s = 1.0/vertices.length;
-        for (const v in vertices) {
-            for (const k in vertices[v]) {
-                if (!(k in middle)) middle[k] = 0.0;
-                middle[k] += s * vertices[v][k];
-            }
-        }
-        return middle;
-    }
-
     this.middle = function (points){
         let middle = new p5.Vector();
         for (const p of points) {
