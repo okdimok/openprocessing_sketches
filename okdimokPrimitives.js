@@ -83,23 +83,23 @@ var okdimokPrimitives = function (sketch) {
         }
     }
     
-    this.lerpManyPrototype = function(channel_getter, final_wrapper) {
+    this.lerpManyPrototype = function(channel_array_getter, final_wrapper) {
         return function(...colors) {
-            let result = [0, 0, 0, 0];
+            let result = channel_array_getter(colors[0][0]).map(c => 0);
             var ratios = colors.map(c => c[1]);
             var total = ratios.reduce((partialSum, r) => partialSum + r, 0);
             ratios = ratios.map(r => r / total);
             for (var ch in result) {
                 for (let i = 0; i < colors.length; i++) {
-                    result[ch] += ratios[i] * channel_getter(colors[i][0], ch);
+                    result[ch] += ratios[i] * channel_array_getter(colors[i][0])[ch];
                 }
             }
             return final_wrapper(...result);
         }
     }
 
-    this.lerpManyColors = this.lerpManyPrototype((color, ch) => color.levels[ch], s.color.bind(s))
-    this.lerpManyArrays = this.lerpManyPrototype((color, ch) => color[ch], function(...args) {return args})
+    this.lerpManyColors = this.lerpManyPrototype((color) => color.levels, s.color.bind(s))
+    this.lerpManyArrays = this.lerpManyPrototype((color) => color, function(...args) {return args})
 
     this.middle = function (points){
         let middle = new p5.Vector();

@@ -23,8 +23,7 @@ let spatial_gradient = function ( sketch ) {
 						utils.randomIn(0, size_y)),
 					[utils.randomIn(0, 255),
 						utils.randomIn(0, 255),
-						utils.randomIn(0, 255),
-						255
+						utils.randomIn(0, 255)
 					]
 				)
 			)
