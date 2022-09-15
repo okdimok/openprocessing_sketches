@@ -27,24 +27,39 @@ var okdimokPrimitives = function (sketch) {
         options.startLoop ??= 0;
         options.endLoop ??= 1;
         options.capture ??= {};
-        let capturer = new CCapture(options.capture);
+        let capturer = options.startLoop > 0 ? new CCapture(options.capture) : undefined;
         let saved = false;
         let draw = function () {
-            if (s.animLoop.elapsedLoops == options.startLoop && s.animLoop.elapsedFrames == 0) {
+            if (s.animLoop.elapsedLoops === options.startLoop && s.animLoop.elapsedFrames === 0) {
                 capturer.start()
             }
             real_draw()
             if (s.animLoop.elapsedLoops < options.endLoop &&
-                s.animLoop.elapsedLoops >= options.startLoop
+                s.animLoop.elapsedLoops >= options.startLoop &&
+                options.startLoop > 0
             ) {
                 capturer.capture(s.canvas);
-            } else if (!saved && s.animLoop.elapsedLoops >= options.endLoop) {
+            } else if (!saved &&
+                 s.animLoop.elapsedLoops >= options.endLoop &&
+                 options.startLoop > 0
+                 ) {
                 capturer.stop();
                 capturer.save();
                 saved = true;
             }
         }
-        return draw;
+
+        let captureNextLoop = function(){
+            if (capturer !== undefined) {
+                capturer.stop();
+            } else {
+                capturer = new CCapture(options.capture);
+            }
+            options.startLoop = s.animLoop.elapsedLoops + 1
+            options.endLoop = s.animLoop.elapsedLoops + 2
+            saved = false;
+        }
+        return [draw, captureNextLoop];
 
     }
 
@@ -130,15 +145,16 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.SpatialGradient = class SpatialGradient {
-        constructor(colorPoints, n_closest, distance_mapping, lerper) {
+        constructor(colorPoints, n_closest, distance_mapping, lerper, point_getter) {
             this.colorPoints = colorPoints;
             this.n_closest = n_closest;
             this.distance_mapping = distance_mapping ?? (v => v**(-2));
             this.lerper = lerper ?? utils.lerpManyColors
+            this.point_getter = point_getter ?? (cp => cp.p)
         }
 
         getPointColor(point){
-            let distances = this.colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
+            let distances = this.colorPoints.map(cp => p5.Vector.sub(this.point_getter(cp), point).magSq());
             let closest = utils.argminN(distances, this.n_closest);
             let pairs = closest.map(v => [this.colorPoints[v[0]].c, this.distance_mapping(v[1])]);
             return this.lerper(...pairs);
@@ -198,19 +214,24 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.LoopNoiseDynamics = class LoopNoiseDynamics extends this.BasicDynamics {
-        constructor(q, sz, radius) {
+        constructor(q, sz, radius, step_z) {
             super(q);
             this.qinit = q.copy();
             this.sz = sz;
             this.radius = radius;
-            this.seed = utils.randomIn(0, 10);
-            this.seed2 = utils.randomIn(10, 100);
+            this.seed_x = utils.randomIn(0, 10);
+            this.seed_y = utils.randomIn(10, 100);
+            this.seed_z = utils.randomIn(100, 200);
+            this.step_z = step_z;
             this.step(0);
         }
         
         step() {
-            this.q.x = this.qinit.x + s.animLoop.noise({radius:this.radius, seed: this.seed})*this.sz.x; 
-            this.q.y = this.qinit.y + s.animLoop.noise({radius:this.radius, seed: this.seed2})*this.sz.y;
+            this.q.x = this.qinit.x + s.animLoop.noise({radius:this.radius, seed: this.seed_x})*this.sz.x; 
+            this.q.y = this.qinit.y + s.animLoop.noise({radius:this.radius, seed: this.seed_y})*this.sz.y;
+            if (this.step_z) {
+                this.q.z = this.qinit.z + s.animLoop.noise({radius:this.radius, seed: this.seed_z})*this.sz.z;
+            }
         }
         
     }

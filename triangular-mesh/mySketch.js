@@ -124,7 +124,9 @@ let triangular_mesh = function ( sketch ) {
 		s.addPearls();
 	}
 
-	if (capture) {s.draw = utils.run_ccapture({capture:{ format: 'webm', framerate: fps, name: "triangularMesh", display: true, quality: 0.95 }}, s.draw)}
+	if (capture) {
+		[s.draw, s.captureNextLoop] = utils.run_ccapture({capture:{ format: 'webm', framerate: fps, name: "triangularMesh", display: true, quality: 0.95 }}, s.draw)
+	}
 
 	s.drawPatternOnce = function() {
 		lines = s.prepareNewGrid();
