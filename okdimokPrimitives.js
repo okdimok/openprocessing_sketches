@@ -121,6 +121,19 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
+    this.lerpMany = function(...colors) {
+        let result = [0, 0, 0, 0];
+        var ratios = colors.map(c => c[1]);
+        var total = ratios.reduce((partialSum, r) => partialSum + r, 0);
+        ratios = ratios.map(r => r / total);
+        for (var ch in result) {
+            for (let i = 0; i < colors.length; i++) {
+                result[ch] += ratios[i] * colors[i][0].levels[ch];
+            }
+        }
+        return s.color(...result);
+    }
+
     this.middle = function (points){
         let middle = new p5.Vector();
         for (const p of points) {
@@ -169,7 +182,7 @@ var okdimokPrimitives = function (sketch) {
             let distances = this.colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
             let closest = utils.argminN(distances, this.n_closest);
             let pairs = closest.map(v => [this.colorPoints[v[0]].c, this.distance_mapping(v[1])]);
-            return utils.Color.mixMany(...pairs);
+            return utils.lerpMany(...pairs);
         }
     }
 
