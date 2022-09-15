@@ -21,13 +21,15 @@ let spatial_gradient = function ( sketch ) {
 				new utils.ColorPoint(
 					new p5.Vector(utils.randomIn(0, size_x),
 						utils.randomIn(0, size_y)),
-					s.color(utils.randomIn(0, 255),
+					[utils.randomIn(0, 255),
 						utils.randomIn(0, 255),
-						utils.randomIn(0, 255))
+						utils.randomIn(0, 255),
+						255
+					]
 				)
 			)
 		}
-		spatialGradient = new utils.SpatialGradient(colorPoints, 3);
+		spatialGradient = new utils.SpatialGradient(colorPoints, 3, (v => v**(-2)), utils.lerpManyArrays);
 	}
 
 	s.drawGradientOnce = function(){
@@ -35,7 +37,8 @@ let spatial_gradient = function ( sketch ) {
 		for (var x = -rad; x <= size_x + 2 * rad; x += 2 * rad) {
 			for (var y = -rad; y <= size_y + 2 * rad; y += 2 * rad) {
 				let p = new p5.Vector(x, y);
-				s.fill(spatialGradient.getPointColor(p))
+				let c = spatialGradient.getPointColor(p);
+				s.fill(s.color(...c))
 				s.circle(x, y, 2*rad);
 			}
 		}
