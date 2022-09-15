@@ -18,6 +18,36 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
+	// https://github.com/spite/ccapture.js/#:~:text=The%20complete%20list%20of%20parameters%20is%3A
+	// WebM image quality from 0.0 (worst) to 0.99999 (best), 1.00 (VP8L lossless) is not supported
+    // https://github.com/mrchantey/p5.createLoop/tree/master/p5.createLoop#gif-options
+    // https://github.com/jnordberg/gif.js#user-content-options
+    this.run_ccapture = function (options, real_draw) {
+        options ??= {};
+        options.startLoop ??= 0;
+        options.endLoop ??= 1;
+        options.capture ??= {};
+        let capturer = new CCapture(options.capture);
+        let saved = false;
+        let draw = function () {
+            if (s.animLoop.elapsedLoops == options.startLoop && s.animLoop.elapsedFrames == 0) {
+                capturer.start()
+            }
+            real_draw()
+            if (s.animLoop.elapsedLoops < options.endLoop &&
+                s.animLoop.elapsedLoops >= options.startLoop
+            ) {
+                capturer.capture(s.canvas);
+            } else if (!saved && s.animLoop.elapsedLoops >= options.endLoop) {
+                capturer.stop();
+                capturer.save();
+                saved = true;
+            }
+        }
+        return draw;
+
+    }
+
     this.randomIn = function randomIn (left, right) {
         return left + Math.random()*(right - left);
     }

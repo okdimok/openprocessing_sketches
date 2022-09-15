@@ -12,6 +12,7 @@ let triangular_mesh = function ( sketch ) {
 	var noise_radius_pose = 0.2;
 	var noise_radius_color = 0.1;
 	var fps = 30;
+	var capture = true;
 
 	var lines=[];
 
@@ -102,6 +103,7 @@ let triangular_mesh = function ( sketch ) {
 	s.yashaMiaColorNoise = function (point, i, j) {
 		let gap = size_x / n_triangles_per_side;
 		let factor = gap;
+		j *= 2
 		if (s.animLoop.noise({seed: Math.PI*2*(j*n_triangles_per_side + i + 0.5), radius: noise_radius_color}) > 0.) 
 			return utils.hslFracToColor(
 				174/360,
@@ -116,25 +118,13 @@ let triangular_mesh = function ( sketch ) {
 			);
 	}
 
-	var saved = false;
-	// https://github.com/spite/ccapture.js/#:~:text=The%20complete%20list%20of%20parameters%20is%3A
-	// WebM image quality from 0.0 (worst) to 0.99999 (best), 1.00 (VP8L lossless) is not supported
-	var capturer = new CCapture({ format: 'webm', framerate: fps, name: "triangularMesh", display: true, quality: 0.95 });
 	s.draw = function(){
-		if (s.animLoop.elapsedFramesTotal === 0) {
-			capturer.start()
-		}
 		s.stepGrid();
 		s.drawPatternOnAGrid();
 		s.addPearls();
-		if (s.animLoop.elapsedLoops == 0) {
-			capturer.capture(s.canvas);
-		} else if (!saved) {
-			capturer.stop();
-			capturer.save();
-			saved = true;
-		}
 	}
+
+	if (capture) {s.draw = utils.run_ccapture({capture:{ format: 'webm', framerate: fps, name: "triangularMesh", display: true, quality: 0.95 }}, s.draw)}
 
 	s.drawPatternOnce = function() {
 		lines = s.prepareNewGrid();
@@ -147,7 +137,8 @@ let triangular_mesh = function ( sketch ) {
 		// 	colorFracToHex(Math.random()) +
 		// 	colorFracToHex(point.x/size) +
 		// 	colorFracToHex(point.y/size);
-		return s.yashaMiaColorNoise(point, i, j);
+		// return s.yashaMiaColorNoise(point, i, j);
+		j*=2
 		return utils.hslFracToColor(
 			// 0.05 + point.x/size/2.5
 			// randomIn(0.05, 0.1),
