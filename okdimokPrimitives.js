@@ -82,57 +82,24 @@ var okdimokPrimitives = function (sketch) {
             this.c = color;
         }
     }
-
-    this.Color = class Color {
-        constructor(r, g, b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.channels = ["r", "g", "b"];
-        }
-
-        mix(other, ratio) {
-            if (ratio == undefined) ratio = 0.5;
-            let result = new Color();
-            for (let c in this.channels) {
-                result[c] = this[c] * (1 - ratio) + other[c] * ratio;
-            }
-        }
-
-        getHex() {
-            return "#" +
-                utils.colorFracToHex(this.r) +
-                utils.colorFracToHex(this.g) +
-                utils.colorFracToHex(this.b);
-        }
-
-        static mixMany(...colors) {
-            let result = new Color();
+    
+    this.lerpManyPrototype = function(channel_getter, final_wrapper) {
+        return function(...colors) {
+            let result = [0, 0, 0, 0];
             var ratios = colors.map(c => c[1]);
             var total = ratios.reduce((partialSum, r) => partialSum + r, 0);
             ratios = ratios.map(r => r / total);
-            for (var ch of Object.values(result.channels)) {
-                result[ch] = 0.0;
+            for (var ch in result) {
                 for (let i = 0; i < colors.length; i++) {
-                    result[ch] += ratios[i] * colors[i][0][ch];
+                    result[ch] += ratios[i] * channel_getter(colors[i][0], ch);
                 }
             }
-            return result;
+            return final_wrapper(...result);
         }
     }
 
-    this.lerpMany = function(...colors) {
-        let result = [0, 0, 0, 0];
-        var ratios = colors.map(c => c[1]);
-        var total = ratios.reduce((partialSum, r) => partialSum + r, 0);
-        ratios = ratios.map(r => r / total);
-        for (var ch in result) {
-            for (let i = 0; i < colors.length; i++) {
-                result[ch] += ratios[i] * colors[i][0].levels[ch];
-            }
-        }
-        return s.color(...result);
-    }
+    this.lerpManyColors = this.lerpManyPrototype((color, ch) => color.levels[ch], s.color.bind(s))
+    this.lerpManyArrays = this.lerpManyPrototype((color, ch) => color[ch], x => x)
 
     this.middle = function (points){
         let middle = new p5.Vector();
@@ -142,7 +109,6 @@ var okdimokPrimitives = function (sketch) {
         middle.mult(1.0/points.length);
         return middle;
     }    
-
 
     // Takes an array and a number of needed minimal values
     // returns an array of pairs [[min_index, value_at_that_index]]
@@ -163,26 +129,19 @@ var okdimokPrimitives = function (sketch) {
         return minPairs;
     }
 
-    this.getPointColor = function (point, colorPoints) {
-        let distances = colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
-        let closest = argminN(distances, 3);
-        let pairs = closest.map(v => [colorPoints[v[0]].c, v[1] ** (-2)]);
-        return Color.mixMany(...pairs);
-
-    }
-
     this.SpatialGradient = class SpatialGradient {
-        constructor(colorPoints, n_closest, distance_mapping) {
+        constructor(colorPoints, n_closest, distance_mapping, lerper) {
             this.colorPoints = colorPoints;
             this.n_closest = n_closest;
-            this.distance_mapping = distance_mapping !== undefined ? distance_mapping : v => v**(-2);
+            this.distance_mapping = distance_mapping ?? (v => v**(-2));
+            this.lerper = lerper ?? utils.lerpManyColors
         }
 
         getPointColor(point){
             let distances = this.colorPoints.map(cp => p5.Vector.sub(cp.p, point).magSq());
             let closest = utils.argminN(distances, this.n_closest);
             let pairs = closest.map(v => [this.colorPoints[v[0]].c, this.distance_mapping(v[1])]);
-            return utils.lerpMany(...pairs);
+            return this.lerper(...pairs);
         }
     }
 
