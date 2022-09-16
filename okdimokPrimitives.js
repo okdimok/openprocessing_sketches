@@ -135,6 +135,7 @@ var okdimokPrimitives = function (sketch) {
 
     this.lerpManyColors = this.lerpManyPrototype((color) => color.levels, s.color.bind(s))
     this.lerpManyArrays = this.lerpManyPrototype((color) => color, function(...args) {return args})
+    this.lerpManyVectors = this.lerpManyPrototype((color) => color.array(), function(...args) {return new p5.Vector(...args)})
 
     this.middle = function (points){
         let middle = new p5.Vector();

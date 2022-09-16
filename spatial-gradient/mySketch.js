@@ -13,26 +13,33 @@ let spatial_gradient = function ( sketch ) {
 		var colorPoints = []; 	
 		for (let i = 0; i < 6; i++) {
 			colorPoints.push(
-				new utils.ColorDynPoint(
+				new utils.DynColorDynPoint(
 					new utils.LoopNoiseDynamics( new p5.Vector(utils.randomIn(0, size_x),
 						utils.randomIn(0, size_y)),
-						new p5.Vector(size_x/3),
+						new p5.Vector(size_x/3, size_y/3),
 						0.1
 					),
-					[utils.randomIn(0, 255),
-						utils.randomIn(0, 255),
-						utils.randomIn(0, 255)
-					]
+					new utils.LoopNoiseDynamics(
+						new p5.Vector (
+							utils.randomIn(0, 255),
+							utils.randomIn(0, 255),
+							utils.randomIn(0, 255)
+						),
+						new p5.Vector(100, 100, 100),
+						0.1,
+						true
+					)
 				)
 			)
 		}
-		spatialGradient = new utils.SpatialGradient(colorPoints, 3, (v => v**(-2)), utils.lerpManyArrays, (cp => cp.p.q));
+		spatialGradient = new utils.SpatialGradient(colorPoints, 3, (v => v**(-2)), utils.lerpManyVectors);
 	}
 
 	s.stepGradient = function(){
 		let millis = s.millis();
 		for (var cp of Object.values(spatialGradient.colorPoints)) {
 			cp.p.step(millis);
+			cp.c.step(millis);
 		}
 	}
 
@@ -43,7 +50,7 @@ let spatial_gradient = function ( sketch ) {
 			for (var y = -rad; y <= size_y + 2 * rad; y +=  2*rad) {
 				let p = new p5.Vector(x, y);
 				let c = spatialGradient.getPointColor(p);
-				s.fill(s.color(...c))
+				s.fill(s.color(...c.array()))
 				// s.rect(x, y, 2*rad, 2*rad);
 				s.circle(x, y, 2*rad);
 			}
