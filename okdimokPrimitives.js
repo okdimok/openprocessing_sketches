@@ -96,7 +96,27 @@ var okdimokPrimitives = function (sketch) {
             this.p = point;
             this.c = color;
         }
+
+        get_color() { return this.c; }
+        get_point() { return this.p; }
+        set_color(color) { this.c = color; }
+        set_point(point) { this.p = point; }
     }
+
+    this.ColorDynPoint = class ColorDynPoint extends this.ColorPoint {
+        get_point() {return this.p.q}
+    }
+    
+    this.DynColorPoint = class DynColorPoint extends this.ColorPoint {
+        get_color() {return this.c.q}
+    }
+
+    this.DynColorDynPoint = class DynColorDynPoint extends this.ColorPoint {
+        get_color() {return this.c.q}
+        get_point() {return this.p.q}
+    }
+
+
     
     this.lerpManyPrototype = function(channel_array_getter, final_wrapper) {
         return function(...colors) {
@@ -145,18 +165,17 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.SpatialGradient = class SpatialGradient {
-        constructor(colorPoints, n_closest, distance_mapping, lerper, point_getter) {
+        constructor(colorPoints, n_closest, distance_mapping, lerper) {
             this.colorPoints = colorPoints;
             this.n_closest = n_closest;
             this.distance_mapping = distance_mapping ?? (v => v**(-2));
             this.lerper = lerper ?? utils.lerpManyColors
-            this.point_getter = point_getter ?? (cp => cp.p)
         }
 
         getPointColor(point){
-            let distances = this.colorPoints.map(cp => p5.Vector.sub(this.point_getter(cp), point).magSq());
+            let distances = this.colorPoints.map(cp => p5.Vector.sub(cp.get_point(), point).magSq());
             let closest = utils.argminN(distances, this.n_closest);
-            let pairs = closest.map(v => [this.colorPoints[v[0]].c, this.distance_mapping(v[1])]);
+            let pairs = closest.map(v => [this.colorPoints[v[0]].get_color(), this.distance_mapping(v[1])]);
             return this.lerper(...pairs);
         }
     }

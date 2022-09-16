@@ -13,7 +13,7 @@ let spatial_gradient = function ( sketch ) {
 		var colorPoints = []; 	
 		for (let i = 0; i < 6; i++) {
 			colorPoints.push(
-				new utils.ColorPoint(
+				new utils.ColorDynPoint(
 					new utils.LoopNoiseDynamics( new p5.Vector(utils.randomIn(0, size_x),
 						utils.randomIn(0, size_y)),
 						new p5.Vector(size_x/3),
@@ -67,7 +67,6 @@ let spatial_gradient = function ( sketch ) {
 	}
 
 	s.captureNextLoop = function(){};
-
 	if (capture) {[s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: 'webm', framerate: fps, name: "spatialGradient_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.draw.bind(s))}
 
 	s.mouseClicked = function() {

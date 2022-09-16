@@ -124,9 +124,10 @@ let triangular_mesh = function ( sketch ) {
 		s.addPearls();
 	}
 
-	if (capture) {
-		[s.draw, s.captureNextLoop] = utils.run_ccapture({capture:{ format: 'webm', framerate: fps, name: "triangularMesh", display: true, quality: 0.95 }}, s.draw)
-	}
+
+	s.captureNextLoop = function(){};
+	if (capture) {[s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: 'webm', framerate: fps, name: "triangularMesh_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.draw.bind(s))}
+
 
 	s.drawPatternOnce = function() {
 		lines = s.prepareNewGrid();
@@ -174,6 +175,12 @@ let triangular_mesh = function ( sketch ) {
 
 	s.mouseClicked = function() {
 		s.drawPatternOnce();
+	}
+
+	s.keyTyped = function() {
+		if (s.key === 's') {
+			s.captureNextLoop();
+		}
 	}
 	
 }
