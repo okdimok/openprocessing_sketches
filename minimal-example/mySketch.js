@@ -65,7 +65,6 @@ let minimal_example = function ( sketch ) {
 		s.frameRate(fps);
 		s.createLoop(loop);
 		s.prepareNewSeeds();
-		s.drawOnce();
     }
 
 
