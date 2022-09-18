@@ -94,28 +94,16 @@ var okdimokPrimitives = function (sketch) {
     this.ColorPoint = class ColorPoint {
         constructor(point, color) {
             this.p = point;
+            this.p_is_dynamic = point instanceof utils.BasicDynamics
             this.c = color;
+            this.c_is_dynamic = color instanceof utils.BasicDynamics
         }
 
-        get_color() { return this.c; }
-        get_point() { return this.p; }
+        get_color() { return this.c_is_dynamic ? this.c.q : this.c; }
+        get_point() { return this.p_is_dynamic ? this.p.q : this.p; }
         set_color(color) { this.c = color; }
         set_point(point) { this.p = point; }
     }
-
-    this.ColorDynPoint = class ColorDynPoint extends this.ColorPoint {
-        get_point() {return this.p.q}
-    }
-    
-    this.DynColorPoint = class DynColorPoint extends this.ColorPoint {
-        get_color() {return this.c.q}
-    }
-
-    this.DynColorDynPoint = class DynColorDynPoint extends this.ColorPoint {
-        get_color() {return this.c.q}
-        get_point() {return this.p.q}
-    }
-
 
     
     this.lerpManyPrototype = function(channel_array_getter, final_wrapper) {

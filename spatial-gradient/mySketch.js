@@ -8,25 +8,26 @@ let spatial_gradient = function ( sketch ) {
 	var spatialGradient;
 	var fps = 30;
 	var capture = true;
+	var loop = 180;
 
 	s.prepareNewSpatialGradient = function(){
 		var colorPoints = []; 	
 		for (let i = 0; i < 6; i++) {
 			colorPoints.push(
-				new utils.DynColorDynPoint(
+				new utils.ColorPoint(
 					new utils.LoopNoiseDynamics( new p5.Vector(utils.randomIn(0, size_x),
 						utils.randomIn(0, size_y)),
-						new p5.Vector(size_x/3, size_y/3),
-						0.1
+						new p5.Vector(size_x, size_y),
+						0.01*loop
 					),
 					new utils.LoopNoiseDynamics(
 						new p5.Vector (
-							utils.randomIn(0, 255),
-							utils.randomIn(0, 255),
-							utils.randomIn(0, 255)
+							utils.randomIn(100, 255),
+							utils.randomIn(100, 255),
+							utils.randomIn(100, 255)
 						),
 						new p5.Vector(100, 100, 100),
-						0.1,
+						0.03*loop,
 						true
 					)
 				)
@@ -44,15 +45,15 @@ let spatial_gradient = function ( sketch ) {
 	}
 
 	s.drawGradientOnce = function(){
-		const rad = 10.;
+		const rad = 16.;
 		s.rectMode(s.CENTER)
 		for (var x = -rad; x <= size_x + 2 * rad; x +=  2*rad) {
 			for (var y = -rad; y <= size_y + 2 * rad; y +=  2*rad) {
 				let p = new p5.Vector(x, y);
 				let c = spatialGradient.getPointColor(p);
 				s.fill(s.color(...c.array()))
-				// s.rect(x, y, 2*rad, 2*rad);
-				s.circle(x, y, 2*rad);
+				s.rect(x, y, 2*rad, 2*rad);
+				// s.circle(x, y, 2*rad);
 			}
 		}
 	}
@@ -62,7 +63,7 @@ let spatial_gradient = function ( sketch ) {
         s.background("#000");
         s.noStroke();
 		s.frameRate(fps);
-		s.createLoop(3);
+		s.createLoop(loop);
 		s.prepareNewSpatialGradient();
 		s.drawGradientOnce();
     }
