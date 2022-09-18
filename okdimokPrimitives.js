@@ -253,12 +253,7 @@ var okdimokPrimitives = function (sketch) {
         } else {
             s.draw = s.drawFrame;
         }
-    
-        s.mouseClicked = function() {
-            s.prepareNewSeeds();
-            s.drawOnce();
-        }
-    
+   
         s.keyTyped = function() {
             if (s.key === 's') {
                 s.captureNextLoop();
@@ -268,6 +263,9 @@ var okdimokPrimitives = function (sketch) {
                 s.background("#000")
             } else if (s.key === 'c') {
                 s.exportCanvasAsPNG()
+            } else if (s.key === 'x') {
+                s.prepareNewSeeds()
+                s.drawOnce()
             }
         }
     
