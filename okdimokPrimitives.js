@@ -99,7 +99,7 @@ var okdimokPrimitives = function (sketch) {
             this.c_is_dynamic = color instanceof utils.BasicDynamics
         }
 
-        get_color() { return this.c_is_dynamic ? this.c.q : this.c; }
+        get_color() { return this.c_is_dynamic ? s.color(this.c.q.array()) : this.c; }
         get_point() { return this.p_is_dynamic ? this.p.q : this.p; }
         set_color(color) { this.c = color; }
         set_point(point) { this.p = point; }
@@ -242,6 +242,76 @@ var okdimokPrimitives = function (sketch) {
             }
         }
         
+    }
+
+    this.add_default_behaviors = function(ctx, sketch) {
+        let s = sketch;
+
+        s.captureNextLoop = function(){};
+        if (ctx.capture) {
+            [s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: 'webm', framerate: fps, name: "spatialGradient_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.drawFrame.bind(s))
+        } else {
+            s.draw = s.drawFrame;
+        }
+    
+        s.mouseClicked = function() {
+            s.prepareNewSeeds();
+            s.drawOnce();
+        }
+    
+        s.keyTyped = function() {
+            if (s.key === 's') {
+                s.captureNextLoop();
+            } else if (s.key === 'f') {
+                s.changeFullSreen();
+            } else if (s.key === 'r') {
+                s.background("#000")
+            } else if (s.key === 'c') {
+                s.exportCanvasAsPNG()
+            }
+        }
+    
+        s.windowResized = function() {
+            if (ctx.fullscreen) {
+                s.resizeCanvas(s.windowWidth, s.windowHeight)
+                s.drawBg()
+                s.prepareNewSeeds()
+                s.drawOnce()
+            }
+        }
+    
+        s.changeFullSreen = function () {
+            ctx.fullscreen = !ctx.fullscreen;
+            s.fullscreen(ctx.fullscreen);
+            if (ctx.fullscreen) {
+                document.querySelector("body").style.overflow= "hidden";
+                s.resizeCanvas(s.windowWidth, s.windowHeight)
+            } else {
+                s.resizeCanvas(s.size_x, s.size_y)
+            }
+            s.drawBg()
+            s.prepareNewSeeds()
+            s.drawOnce()
+        }
+
+        s.exportCanvasAsPNG = function(fileName) {
+
+            fileName ??= "generative.png"
+            var MIME_TYPE = "image/png";
+            var imgURL = s.canvas.toDataURL(MIME_TYPE);
+        
+            var dlLink = document.createElement('a');
+            dlLink.download = fileName;
+            dlLink.href = imgURL;
+            dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+        
+            document.body.appendChild(dlLink);
+            dlLink.click();
+            document.body.removeChild(dlLink);
+        }
+
+
+
     }
 
 };
