@@ -1,4 +1,4 @@
-let minimal_example = function ( sketch ) {
+let circles_overlapping = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
 	[s.size_x, s.size_y] = [s.windowWidth, s.windowHeight];
@@ -8,9 +8,12 @@ let minimal_example = function ( sketch ) {
     var disturbance = 0.3;
 	s.fps = 30;
 	s.capture = true;
-	var loop = 180;
+	var loop = 3;
 	var colorPoints = [];
 	var fullscreen = false;
+	const n_concentric = 20;
+	const alpha = 10;
+
 
 	s.drawBg = function() { s.background("#000"); }
 
@@ -31,7 +34,7 @@ let minimal_example = function ( sketch ) {
 							utils.randomIn(100, 255)
 						),
 						new p5.Vector(100, 100, 100),
-						0.1*loop,
+						0.03*loop,
 						true
 					)
 				)
@@ -48,13 +51,18 @@ let minimal_example = function ( sketch ) {
 	}
 
 	s.drawOnce = function(){
-		// s.background("#000");
-		const rad = 16.;
+		// s.drawBg();
+		s.background(0, 0, 0, 30)
+		const rad = s.width/n_concentric/2;
 		s.rectMode(s.CENTER)
 		for (var cp of Object.values(colorPoints)) {
 			let p = cp.get_point();
-			s.fill(cp.get_color())
-			s.rect(p.x, p.y, 2 * rad, 2* rad)
+			let c = cp.get_color();
+			c.setAlpha(alpha);
+			s.fill(c);
+			for (let i = 1; i <= n_concentric; i++) {
+				s.circle(p.x, p.y, 2 * rad*i)
+			}
 		}
 	}
 

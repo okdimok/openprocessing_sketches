@@ -244,12 +244,13 @@ var okdimokPrimitives = function (sketch) {
         
     }
 
-    this.add_default_behaviors = function(ctx, sketch) {
+    this.add_default_behaviors = function(ctx, sketch, name) {
         let s = sketch;
+        name ??= "generative"
 
         s.captureNextLoop = function(){};
-        if (ctx.capture) {
-            [s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: 'webm', framerate: fps, name: "spatialGradient_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.drawFrame.bind(s))
+        if (s.capture) {
+            [s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: 'webm', framerate: s.fps, name: name + "_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.drawFrame.bind(s))
         } else {
             s.draw = s.drawFrame;
         }
