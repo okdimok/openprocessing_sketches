@@ -18,6 +18,12 @@ var okdimokPrimitives = function (sketch) {
         }
     }
 
+    this.getScreenSize = function() {
+        let sz = [s.displayWidth, s.displayHeight]
+        sz = sz.map(x => x* s.pixelDensity())
+        return sz
+    }
+
 	// https://github.com/spite/ccapture.js/#:~:text=The%20complete%20list%20of%20parameters%20is%3A
 	// WebM image quality from 0.0 (worst) to 0.99999 (best), 1.00 (VP8L lossless) is not supported
     // https://github.com/mrchantey/p5.createLoop/tree/master/p5.createLoop#gif-options

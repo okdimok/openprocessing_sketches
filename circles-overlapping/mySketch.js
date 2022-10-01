@@ -4,6 +4,7 @@ let circles_overlapping = function ( sketch ) {
 	[s.size_x, s.size_y] = [s.windowWidth, s.windowHeight];
     [s.size_x, s.size_y] = [3840, 2160];
     [s.size_x, s.size_y] = [512, 512];
+	[s.size_x, s.size_y] = utils.getScreenSize();
 
     var disturbance = 0.3;
 	s.fps = 30;
@@ -12,14 +13,14 @@ let circles_overlapping = function ( sketch ) {
 	var colorPoints = [];
 	var fullscreen = false;
 	const n_concentric = 20;
-	const alpha = 10;
+	const alpha = 20;
 
 
 	s.drawBg = function() { s.background("#000"); }
 
 	s.prepareNewSeeds = function(){
 		colorPoints = []
-		for (let i = 0; i < 5; i++) {
+		for (let i = 0; i < 3; i++) {
 			colorPoints.push(
 				new utils.ColorPoint(
 					new utils.LoopNoiseDynamics( new p5.Vector(utils.randomIn(0, s.width),
@@ -51,9 +52,9 @@ let circles_overlapping = function ( sketch ) {
 	}
 
 	s.drawOnce = function(){
-		// s.drawBg();
-		s.background(0, 0, 0, 30)
-		const rad = s.width/n_concentric/2;
+		s.drawBg();
+		// s.background(0, 0, 0, 30)
+		const rad = s.width/n_concentric/2*2;
 		s.rectMode(s.CENTER)
 		for (var cp of Object.values(colorPoints)) {
 			let p = cp.get_point();
