@@ -2,6 +2,10 @@ var okdimokPrimitives = function (sketch) {
     let s = sketch;
     let utils = this;
 
+    this.parsedHash = new URLSearchParams(
+        window.location.hash.substring(1) // skip the first char (#)
+    );
+
     this.getPaperSizeInPixes = function (paper, dpi, landscape) {
         let paper_size_mm = {
             a2: [420, 594],
@@ -176,19 +180,40 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.BasicDynamics = class BasicDynamics {
+        /**
+         * @param  {p5.Vector} q the initial position
+         */
         constructor(q) {
             this.q = q;
             this.prev_time = undefined;
+            this.prev_q = undefined;
+            this.dq = undefined;
         }
         
+        /**
+         * @param  {float} millis the current number of millis
+         */
         frame_time(millis){
             let frame_time = millis - this.prev_time;
             this.prev_time = millis;
             return frame_time;
         }
+
+        update_dq(){
+            let dq = p5.Vector.sub(this.q, this.prev_q);
+            this.prev_q = this.q.copy();
+            this.dq = dq
+            return dq;
+        }
+
+        step_impl(millis){
+            true;
+        }
         
         step(millis) {
-            this.frame_time(millis);
+            this.frame_s = this.frame_time(millis)/1000;
+            this.step_impl(millis);
+            this.update_dq();
         }
     }
 
@@ -198,10 +223,9 @@ var okdimokPrimitives = function (sketch) {
             this.qdot = qdot;
         }
                 
-        step(millis) {
-            let frame_s = this.frame_time(millis)/ 1000;
-            console.assert(frame_s !== undefined);
-            let dq = this.qdot.copy().mult(frame_s);
+        step_impl() {
+            console.assert(this.frame_s !== undefined);
+            let dq = this.qdot.copy().mult(this.frame_s);
             this.q.add(dq);
         }
     }
@@ -217,8 +241,7 @@ var okdimokPrimitives = function (sketch) {
             this.step(0);
         }
         
-        step(millis) {
-            let frame_s = this.frame_time(millis)/ 1000;
+        step_impl(millis) {
             let elapsed_s = millis/1000;
             console.assert(frame_s !== undefined);
             this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
@@ -240,7 +263,7 @@ var okdimokPrimitives = function (sketch) {
             this.step(0);
         }
         
-        step() {
+        step_impl() {
             this.q.x = this.qinit.x + s.animLoop.noise({radius:this.radius, seed: this.seed_x})*this.sz.x; 
             this.q.y = this.qinit.y + s.animLoop.noise({radius:this.radius, seed: this.seed_y})*this.sz.y;
             if (this.step_z) {

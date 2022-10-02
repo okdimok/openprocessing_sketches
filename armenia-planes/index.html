@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru"">
+<head>
+	<meta charset="UTF-8">
+
+	<!-- keep the line below for OpenProcessing compatibility -->
+	<!-- <script src="https://openprocessing.org/openprocessing_sketch.js"></script> -->
+	<!-- https://github.com/mrchantey/p5.createLoop/tree/master/p5.createLoop -->
+	<script src="/local-dev/p5.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js" integrity="sha512-rCZdHNB0AePry6kAnKAVFMRfWPmUXSo+/vlGtrOUvhsxD0Punm/xWbEh+8vppPIOzKB9xnk42yCRZ5MD/jvvjQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+	<script src="/local-dev/p5.createloop.js"></script>
+	<!-- <script src="https://unpkg.com/p5.createloop@0.2.8/dist/p5.createloop.js"></script> -->
+	<script src="/local-dev/CCapture.all.min.js"></script>
+	<!-- <script src="https://unpkg.com/ccapture.js@1.1.0/build/CCapture.all.min.js"></script> -->
+	<script src="/okdimokPrimitives.js"></script>
+	<style>
+		body {margin: 0px;}
+		#dimchik-text {
+			position: absolute;
+			background: #fffa;
+			top: 3%;
+			left: 3%;
+			max-width: 500px;
+			border-radius: 10px;
+			padding: 10px;
+		}
+		main {overflow: hidden;}
+	</style>
+</head>
+</head>
+
+<body>   
+	<main>
+		<div id="armenia-planes"></div>
+		<div id="dimchik-text">
+			<p>Дорогой Димчик!</p> 
+			<p>С днём рождения!</p> 
+			<p>Эта открыта — оставшаяся часть подарка, который мы тебе уже подарили — билетов в свободный армянский мир. Добро пожаловать в Ереван. </p>
+			<p>Даня, Саша, Вита, Дима, Дара</p>
+		</div>
+	</main>
+</body>
+<script src="mySketch.js"></script>
+<script type="application/javascript">
+	let armenia_planes_sketch = new p5 (armenia_planes, "armenia-planes");
+</script>
+</html>
