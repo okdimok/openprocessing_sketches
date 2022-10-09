@@ -8,6 +8,7 @@ let minimal_example = function ( sketch ) {
     var disturbance = 0.3;
 	s.fps = 30;
 	s.capture = true;
+	s.video_format = "png";
 	var loop = 180;
 	var colorPoints = [];
 	var fullscreen = false;

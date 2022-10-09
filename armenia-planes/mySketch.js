@@ -2,15 +2,16 @@ let armenia_planes = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
 	[s.size_x, s.size_y] = [s.windowWidth, s.windowHeight];
-    // [s.size_x, s.size_y] = [3840, 2160];
-    // [s.size_x, s.size_y] = [512, 512];
+    [s.size_x, s.size_y] = [3840, 2160];
+    [s.size_x, s.size_y] = [512, 512];
 
     var disturbance = 0.3;
 	s.fps = 30;
 	s.capture = true;
-	var loop = 10;
+	s.video_format = "png";
+	var loop = 3;
 	var planes = [];
-	const n_planes = 50;
+	const n_planes = 6;
 	const plane_sz = 100;
 	var fullscreen = false;
 
@@ -19,13 +20,20 @@ let armenia_planes = function ( sketch ) {
 	s.prepareNewSeeds = function () {
 		planes = []
 		for (let i = 0; i < n_planes; i++) {
+			// planes.push(
+			// 	new utils.LoopNoiseDynamics(new p5.Vector(utils.randomIn(0, s.width),
+			// 		utils.randomIn(0, s.height)),
+			// 		new p5.Vector(s.width, s.height).mult(2.),
+			// 		0.01 * loop
+			// 	)
+			// )
 			planes.push(
-				new utils.LoopNoiseDynamics(new p5.Vector(utils.randomIn(0, s.width),
-					utils.randomIn(0, s.height)),
-					new p5.Vector(s.width, s.height).mult(2.),
-					0.01 * loop
+				new utils.LoopNoiseDynamics(new p5.Vector(s.width/2,
+					s.height/2),
+					new p5.Vector(s.width, s.height).mult(0.4),
+					0.05 * loop
 				)
-			)
+			);
 		}
 	}
 
@@ -36,9 +44,13 @@ let armenia_planes = function ( sketch ) {
 		}
 	}
 
-	s.drawPlane = function() {
+	s.drawPlane = function(scale) {
 		// https://svg2p5.com/ 
-		s.scale(1,1);
+		s.push()
+		// s.translate(-20, -87);
+		s.scale(scale??1);
+		s.translate(20, -87);
+		s.rotate(s.PI/4)
 		s.strokeCap(s.PROJECT);
 		s.strokeJoin(s.MITER);
 		s.beginShape();
@@ -73,11 +85,13 @@ let armenia_planes = function ( sketch ) {
 		s.bezierVertex(16.71,106.24,16.63,106.11,16.63,105.75);
 		s.vertex(16.63,105.75);
 		s.endShape(s.CLOSE);
+		s.pop()
+
 	}
 
 	s.drawOnce = function(){
 		s.clear();
-		s.background("#000");
+		// s.background("#000");
 		const rad = 2.;
 		const x_axis = new p5.Vector(1, 0, 0)
 		s.rectMode(s.CENTER);
@@ -85,10 +99,11 @@ let armenia_planes = function ( sketch ) {
 		for (const i in Object.values(planes)) {
 			let p = planes[i];
 			let c = p.q;
+			// c = new p5.Vector(100, 100);
 			let n = p5.Vector.add(p.q, p.dq);
 			s.push()
 			s.translate(c.x, c.y);
-			s.rotate(x_axis.angleBetween(p.dq)+s.PI/4)
+			s.rotate(x_axis.angleBetween(p.dq))
 			if (i % 3 == 0) {
 				s.fill(s.color(217, 0, 18));
 			} else if (i % 3 == 1) {
@@ -98,7 +113,9 @@ let armenia_planes = function ( sketch ) {
 			}
 			// s.fill("white");
 			// s.stroke("red");
-			s.drawPlane();
+			s.drawPlane(0.7);
+			// s.fill("black")
+			// s.circle(0, 0, 2);
 			// s.image(img, -plane_sz/2, -plane_sz/2, plane_sz, plane_sz);
 			s.pop()
 			// s.fill("red")

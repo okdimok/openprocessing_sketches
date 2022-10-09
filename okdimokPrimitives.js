@@ -279,7 +279,7 @@ var okdimokPrimitives = function (sketch) {
 
         s.captureNextLoop = function(){};
         if (s.capture) {
-            [s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: 'webm', framerate: s.fps, name: name + "_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.drawFrame.bind(s))
+            [s.draw, s.captureNextLoop] = utils.run_ccapture({startLoop: -1, capture:{ format: s.video_format??'webm', framerate: s.fps, name: name + "_"+(new Date().toISOString()), display: true, quality: 0.95 }}, s.drawFrame.bind(s))
         } else {
             s.draw = s.drawFrame;
         }
