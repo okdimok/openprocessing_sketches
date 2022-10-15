@@ -1,9 +1,7 @@
 let armenia_planes = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
-	[s.size_x, s.size_y] = [s.windowWidth, s.windowHeight];
-    [s.size_x, s.size_y] = [3840, 2160];
-    [s.size_x, s.size_y] = [512, 512];
+	[s.size_x, s.size_y] = utils.getSizeFromHash()
 
     var disturbance = 0.3;
 	s.fps = 30;

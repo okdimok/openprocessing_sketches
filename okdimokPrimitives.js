@@ -28,6 +28,22 @@ var okdimokPrimitives = function (sketch) {
         return sz
     }
 
+    this.getSizeFromHash = function () {
+        switch (this.parsedHash.get("sz")){
+            case "tgm":
+                return [512, 512];
+            case "window":
+                return [s.windowWidth, s.windowHeight];
+            case "screen":
+                return this.getScreenSize();
+            case "a2":
+            case "a3":
+            case "a4":
+                return this.getPaperSizeInPixes(this.parsedHash.get("sz"), this.parsedHash.get("dpi")??300, this.parsedHash.get("landscape"))
+        }
+
+    }
+
 	// https://github.com/spite/ccapture.js/#:~:text=The%20complete%20list%20of%20parameters%20is%3A
 	// WebM image quality from 0.0 (worst) to 0.99999 (best), 1.00 (VP8L lossless) is not supported
     // https://github.com/mrchantey/p5.createLoop/tree/master/p5.createLoop#gif-options
@@ -276,6 +292,9 @@ var okdimokPrimitives = function (sketch) {
     this.add_default_behaviors = function(ctx, sketch, name) {
         let s = sketch;
         name ??= "generative"
+        if (this.parsedHash.get("sz")) {
+            name += "_" + this.parsedHash.get("sz");
+        }
 
         s.captureNextLoop = function(){};
         if (s.capture) {
@@ -322,13 +341,13 @@ var okdimokPrimitives = function (sketch) {
             s.drawOnce()
         }
 
-        s.exportCanvasAsPNG = function(fileName) {
+        s.exportCanvasAsPNG = function() {
 
-            fileName ??= "generative.png"
-            var MIME_TYPE = "image/png";
-            var imgURL = s.canvas.toDataURL(MIME_TYPE);
+            let fileName = name + ".png"
+            let MIME_TYPE = "image/png";
+            let imgURL = s.canvas.toDataURL(MIME_TYPE);
         
-            var dlLink = document.createElement('a');
+            let dlLink = document.createElement('a');
             dlLink.download = fileName;
             dlLink.href = imgURL;
             dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
