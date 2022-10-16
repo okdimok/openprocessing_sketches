@@ -29,7 +29,8 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.getSizeFromHash = function () {
-        switch (this.parsedHash.get("sz")){
+        let sz = this.parsedHash.get("sz")
+        switch (sz){
             case "tgm":
                 return [512, 512];
             case "window":
@@ -40,6 +41,9 @@ var okdimokPrimitives = function (sketch) {
             case "a3":
             case "a4":
                 return this.getPaperSizeInPixes(this.parsedHash.get("sz"), this.parsedHash.get("dpi")??300, this.parsedHash.get("landscape"))
+            default:
+                sz = parseInt(sz);
+                return [sz, sz];
         }
 
     }
