@@ -43,6 +43,7 @@ var okdimokPrimitives = function (sketch) {
                 return this.getPaperSizeInPixes(this.parsedHash.get("sz"), this.parsedHash.get("dpi")??300, this.parsedHash.get("landscape"))
             default:
                 sz = parseInt(sz);
+                if (!sz) sz = 512;
                 return [sz, sz];
         }
 
