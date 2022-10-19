@@ -19,7 +19,7 @@ let cross_sticker = function ( sketch ) {
 
 	s.prepareNewSpatialGradient = function(){
 		var colorPoints = []; 	
-		for (let i = 0; i < 9; i++) {
+		for (let i = 0; i < 15; i++) {
 			colorPoints.push(
 				new utils.ColorPoint(
 					new utils.LoopNoiseDynamics( new p5.Vector(utils.randomIn(0, s.width),
@@ -29,18 +29,18 @@ let cross_sticker = function ( sketch ) {
 					),
 					new utils.LoopNoiseDynamics(
 						new p5.Vector (
-							utils.randomIn(150, 255),
-							utils.randomIn(0, 100),
+							utils.randomIn(100, 255),
+							utils.randomIn(0, 50),
 							utils.randomIn(0, 1)
 						),
-						new p5.Vector(70, 100, 1),
+						new p5.Vector(100, 100, 1),
 						0.03*loop,
 						true
 					)
 				)
 			)
 		}
-		spatialGradient = new utils.SpatialGradient(colorPoints, 3, (v => v**(-1.2)), utils.lerpManyColors);
+		spatialGradient = new utils.SpatialGradient(colorPoints, 3, (v => v**(-2)), utils.lerpManyColors);
 	}
 
 	s.stepGradient = function(){
