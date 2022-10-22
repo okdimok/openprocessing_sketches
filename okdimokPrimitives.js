@@ -136,7 +136,9 @@ var okdimokPrimitives = function (sketch) {
         set_point(point) { this.p = point; }
     }
 
-    
+    // Returns the function that takes a number of tuples as it arguments
+    // (lerpable, weight)
+    // and linearly interpolates them
     this.lerpManyPrototype = function(channel_array_getter, final_wrapper) {
         return function(...colors) {
             let result = channel_array_getter(colors[0][0]).map(c => 0);
@@ -292,6 +294,13 @@ var okdimokPrimitives = function (sketch) {
             }
         }
         
+    }
+
+    if (p5.hasOwnProperty('tween')) {
+        let prev_update = p5.tween.manager.update.bind(p5.tween.manager);
+        p5.tween.manager.update = function (deltaTime) {
+            if (deltaTime !== undefined) prev_update(deltaTime);
+        }
     }
 
     this.add_default_behaviors = function(ctx, sketch, name) {
