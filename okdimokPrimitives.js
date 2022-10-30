@@ -297,10 +297,25 @@ var okdimokPrimitives = function (sketch) {
     }
 
     if (p5.hasOwnProperty('tween')) {
-        let prev_update = p5.tween.manager.update.bind(p5.tween.manager);
+        let tween_prev_update = p5.tween.manager.update.bind(p5.tween.manager);
         p5.tween.manager.update = function (deltaTime) {
-            if (deltaTime !== undefined) prev_update(deltaTime);
+            if (deltaTime !== undefined) tween_prev_update(deltaTime);
         }
+        p5.tween.Tween.prototype.setSketch = function (s) { this.s = s; return this;}
+        p5.tween.Tween.prototype.getTotalDuration = function() {return this.motions.map(m=>m.duration).reduce((a, b) => a + b);}
+        p5.tween.Tween.prototype.addLastMotions = function (actions, easing = 'linear') {
+            return this.addMotions(actions, s.loop*1000 - this.getTotalDuration(), easing);
+        }
+
+        p5.tween.Tween.prototype.addMotionSeconds = function (key, target, duration_s, easing = 'linear') {
+            return this.addMotions(key, target, duration_s*1000, easing);
+        }
+        p5.tween.Tween.prototype.addMotionsSeconds = function (actions, duration_s, easing = 'linear') {
+            return this.addMotions(actions, duration_s*1000, easing);
+        }
+
+        // p5.tween.manager.Tween =  p5.tween.Tween;
+    
     }
 
     this.add_default_behaviors = function(ctx, sketch, name) {

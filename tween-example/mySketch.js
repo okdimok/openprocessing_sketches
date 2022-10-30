@@ -8,7 +8,7 @@ let tween_example = function ( sketch ) {
 	s.fps = 30;
 	s.capture = true;
 	s.video_format = "png";
-	var loop = 3;
+	s.loop = 3;
 	var drawables = [];
 	var fullscreen = false;
 
@@ -20,29 +20,30 @@ let tween_example = function ( sketch ) {
 			this.g = g;
 			this.b = b;
 			this.tween = p5.tween.manager.addTween(this)
-				.addMotions([
+				.setSketch(s)
+				.addMotionsSeconds([
 					{ key: 'x', target: utils.randomIn(0, s.width) },
 					{ key: 'y', target: utils.randomIn(0, s.height) },
 					{ key: 'r', target: utils.randomIn(0, 255), },
 					{ key: 'g', target: utils.randomIn(0, 255) },
 					{ key: 'b', target: utils.randomIn(0, 255) },
-					], loop*1000/4)
-				.addMotions([
+					], s.loop/4)
+				.addMotionsSeconds([
 					{ key: 'x', target: 100 },
 					{ key: 'y', target: 100	},
-					], loop*1000/4)
+					], s.loop/4)
 				// Second motion: Change x and y to mouse position in 500ms at the same time
-				.addMotions([
+				.addMotionsSeconds([
 							{ key: 'x', target: s.mouseX },
 							{ key: 'y', target: s.mouseY }
-						], loop*1000/4, 'easeInOutQuint')
-				.addMotions([
+						], s.loop/4, 'easeInOutQuint')
+				.addLastMotions([
 					{ key: 'x', target: this.x },
 					{ key: 'y', target: this.y },
 					{ key: 'r', target: this.r },
 					{ key: 'g', target: this.g },
 					{ key: 'b', target: this.b },
-				], loop*1000/4, 'easeInOutQuint')
+				], 'easeInOutQuint')
 				// Start the tween
 				.startLoop()
 		}
@@ -50,6 +51,10 @@ let tween_example = function ( sketch ) {
 		step() {
 			this.tween.motions[2].actions[0].target = s.mouseX;
 			this.tween.motions[2].actions[1].target = s.mouseY;
+			if (this.tween.currentMotionIndex == 3) {
+				this.tween.motionStart['x'] = s.mouseX;
+				this.tween.motionStart['y'] = s.mouseY;
+			}
 		}
 
 		draw() {
@@ -101,7 +106,7 @@ let tween_example = function ( sketch ) {
         s.drawBg();
         s.noStroke();
 		s.frameRate(s.fps);
-		s.createLoop(loop);
+		s.createLoop(s.loop);
 		s.prepareNewSeeds();
     }
 
