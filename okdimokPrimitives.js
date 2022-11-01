@@ -299,19 +299,48 @@ var okdimokPrimitives = function (sketch) {
     if (p5.hasOwnProperty('tween')) {
         let tween_prev_update = p5.tween.manager.update.bind(p5.tween.manager);
         p5.tween.manager.update = function (deltaTime) {
-            if (deltaTime !== undefined) tween_prev_update(deltaTime);
+            if (deltaTime === undefined) { return ; }
+            if (deltaTime === 0) { return; }
+            return tween_prev_update(deltaTime);
+        }
+        p5.tween.manager.restartAll = function(deltaTime) {
+            for (let tweenItem of this.tweens) {
+                tweenItem.tween.restart();
+            }
         }
         p5.tween.Tween.prototype.setSketch = function (s) { this.s = s; return this;}
         p5.tween.Tween.prototype.getTotalDuration = function() {return this.motions.map(m=>m.duration).reduce((a, b) => a + b);}
+        p5.tween.Tween.prototype.addLastMotion = function (key, target, easing = 'linear') {
+            console.assert(s, "Sketch has to be set");
+            return this.addMotion(key, target, s.loop*1000 - this.getTotalDuration(), easing);
+        }
         p5.tween.Tween.prototype.addLastMotions = function (actions, easing = 'linear') {
+            console.assert(s, "Sketch has to be set");
             return this.addMotions(actions, s.loop*1000 - this.getTotalDuration(), easing);
         }
-
         p5.tween.Tween.prototype.addMotionSeconds = function (key, target, duration_s, easing = 'linear') {
-            return this.addMotions(key, target, duration_s*1000, easing);
+            console.assert(duration_s, "Duration has to be set");
+            return this.addMotion(key, target, duration_s*1000, easing);
         }
         p5.tween.Tween.prototype.addMotionsSeconds = function (actions, duration_s, easing = 'linear') {
+            console.assert(duration_s, "Duration has to be set");
             return this.addMotions(actions, duration_s*1000, easing);
+        }
+
+        this.TweenDynamics = class TweenDynamics extends this.BasicDynamics {
+            constructor(q, tween_create_func) {
+                super(q);
+                this.qinit = q.copy();
+                this.step(0);
+                this.tween = tween_create_func(q);
+            }
+
+            
+            
+            step_impl() {
+
+            }
+            
         }
 
         // p5.tween.manager.Tween =  p5.tween.Tween;
@@ -331,6 +360,8 @@ var okdimokPrimitives = function (sketch) {
         } else {
             s.draw = s.drawFrame;
         }
+        // s.prev_millis = s.millis();
+        // s.registerMethod('pre', () => {let m = s.millis(); s.deltaTime = m - s.prev_millis; s.prev_millis = m});
    
         s.keyTyped = function() {
             if (s.key === 's') {

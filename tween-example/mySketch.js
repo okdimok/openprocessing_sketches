@@ -19,6 +19,7 @@ let tween_example = function ( sketch ) {
 			this.r = r;
 			this.g = g;
 			this.b = b;
+			// see also yesno sticker for TweenDynamics and bare pause
 			this.tween = p5.tween.manager.addTween(this)
 				.setSketch(s)
 				.addMotionsSeconds([
@@ -82,14 +83,11 @@ let tween_example = function ( sketch ) {
 		}
 	}
 
-	var prev_millis = s.millis();
 	s.stepDynamics = function(){
-		let millis = s.millis();
 		for (var cp of Object.values(drawables)) {
 			cp.step();
 		}
-		p5.tween.manager.update(millis - prev_millis);
-		prev_millis = millis;
+		p5.tween.manager.update(s.deltaTime);
 	}
 
 	s.drawOnce = function(){
