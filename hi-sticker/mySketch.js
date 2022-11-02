@@ -16,24 +16,109 @@ let hi_sticker = function ( sketch ) {
 	
 	class HPath {
 		constructor() {
+			this.rad = 10;
+			// h is the total height  in diameters
+			// w is the width of the middle bar in diameters
+			let r = this.rad;
+			let h = 10, w = 3;
 			this.path = new utils.Path()
-				.addPoint(new p5.Vector(200, 200))
-				.addPoint(new p5.Vector(200, 400))
-				.addPoint(new p5.Vector(100, 400))
-				.close()
+				.addPoint(new p5.Vector(-w*r, r))
+				.addPoint(new p5.Vector(w*r, r))
+				.addPoint(new p5.Vector(w*r, r*h))
+				.addPoint(new p5.Vector((w+2)*r, r*h))
+				.addPoint(new p5.Vector((w+2)*r, -r*h))
+				.addPoint(new p5.Vector(w*r, -r*h))
+				.addPoint(new p5.Vector(w*r, -h))
+				.addPoint(new p5.Vector(-w*r, -h))
+				.addPoint(new p5.Vector(-w*r, -r*h))
+				.addPoint(new p5.Vector(-(w+2)*r, -r*h))
+				.addPoint(new p5.Vector(-(w+2)*r, r*h))
+				.addPoint(new p5.Vector(-w*r, r*h))
+				.close();
+			this.total_n = s.floor(this.path.getTotalLength()/2/r/1.3);
+
 		}
 
 		draw () {
+			s.push();
 			s.noFill();
+			s.translate(-10*this.rad, 0);
 			this.path.display()
-			for (var i = 0.1; i < 1; i+=0.1) {
-				let p = this.path.getPosAtT(i);
+			for (var i = 0.; i < 1; i+=1./this.total_n) {
+				let p = this.path.getPosAtT(i + s.animLoop.progress/3);
 				s.fill("green")
-				s.circle(p.x, p.y, 10);
+				s.circle(p.x, p.y, 20);
+				// s.rectMode(s.CENTER)
+				// s.rect(p.x, p.y, 20, 20);
 			}
+			s.pop()
+		}
+	}
+
+	class IPath {
+		constructor() {
+			this.rad = 10;
+			// hb is the height of the bottom in diameters
+			// ht is the height of the top in diameters
+			let r = this.rad;
+			let hb = 10, ht = 5;
+			this.path = new utils.Path()
+				.addPoint(new p5.Vector(-r, -ht*r))
+				.addPoint(new p5.Vector(r, -ht*r))
+				.addPoint(new p5.Vector(r, hb*r))
+				.addPoint(new p5.Vector(-r, hb*r))
+				.close();
+			this.total_n = s.floor(this.path.getTotalLength()/2/r/1.3);
+
 		}
 
+		draw () {
+			s.push();
+			s.noFill();
+			this.path.display()
+			for (var i = 0.; i < 1; i+=1./this.total_n) {
+				let p = this.path.getPosAtT(i + s.animLoop.progress);
+				s.fill("green")
+				s.circle(p.x, p.y, 20);
+				// s.rectMode(s.CENTER)
+				// s.rect(p.x, p.y, 20, 20);
+			}
+			s.pop()
+		}
 	}
+
+	class ITopPath {
+		constructor() {
+			this.rad = 10;
+			// hb is the height of the bottom in diameters
+			// ht is the height of the top in diameters
+			let r = this.rad;
+			let hb = 10, ht = 3;
+			this.path = new utils.Path()
+				.addPoint(new p5.Vector(-r, -hb*r))
+				.addPoint(new p5.Vector(r, -hb*r))
+				.addPoint(new p5.Vector(r, -hb*(r-1)))
+				.addPoint(new p5.Vector(-r, -hb*(r-1)))
+				.close();
+			this.total_n = 4;
+
+		}
+
+		draw () {
+			s.push();
+			s.noFill();
+			this.path.display()
+			for (var i = 0.; i < 1; i+=1./this.total_n) {
+				let p = this.path.getPosAtT(i + s.animLoop.progress*3);
+				s.fill("green")
+				s.circle(p.x, p.y, 20);
+				// s.rectMode(s.CENTER)
+				// s.rect(p.x, p.y, 20, 20);
+			}
+			s.pop()
+		}
+	}
+
 
 
 	s.drawBg = function() { s.background("#000"); }
@@ -51,7 +136,7 @@ let hi_sticker = function ( sketch ) {
 
 	s.prepareNewSeeds = function(){
 		s.prepareNewSpatialGradient();
-		drawables = [new HPath()]
+		drawables = [new HPath(), new IPath(), new ITopPath()]
 		p5.tween.manager.restartAll();
 	}
 
@@ -83,6 +168,7 @@ let hi_sticker = function ( sketch ) {
 
 	s.drawFrame = function() {
 		s.clear()
+		s.translate(s.size_x/2, s.size_y/2)
 		s.stepDynamics();
 		s.drawOnce();
 	}

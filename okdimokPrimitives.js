@@ -352,8 +352,6 @@ var okdimokPrimitives = function (sketch) {
 
         // Draw the path
         display() {
-            s.stroke("red");
-            s.strokeWeight(1);
             s.beginShape();
             for (let v of this.points) {
                 s.vertex(v.x, v.y);
