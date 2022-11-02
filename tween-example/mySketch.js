@@ -19,7 +19,7 @@ let tween_example = function ( sketch ) {
 			this.r = r;
 			this.g = g;
 			this.b = b;
-			// see also yesno sticker for TweenDynamics and bare pause
+			// see also yesno_sticker for TweenDynamics and bare pause
 			this.tween = p5.tween.manager.addTween(this)
 				.setSketch(s)
 				.addMotionsSeconds([
@@ -32,8 +32,9 @@ let tween_example = function ( sketch ) {
 				.addMotionsSeconds([
 					{ key: 'x', target: 100 },
 					{ key: 'y', target: 100	},
-					], s.loop/4)
-				// Second motion: Change x and y to mouse position in 500ms at the same time
+					], s.loop*0.2)
+				.addMotionsSeconds([], s.loop*0.05)
+				// Change x and y to mouse position in 500ms at the same time
 				.addMotionsSeconds([
 							{ key: 'x', target: s.mouseX },
 							{ key: 'y', target: s.mouseY }
@@ -50,9 +51,9 @@ let tween_example = function ( sketch ) {
 		}
 
 		step() {
-			this.tween.motions[2].actions[0].target = s.mouseX;
-			this.tween.motions[2].actions[1].target = s.mouseY;
-			if (this.tween.currentMotionIndex == 3) {
+			this.tween.motions[3].actions[0].target = s.mouseX;
+			this.tween.motions[3].actions[1].target = s.mouseY;
+			if (this.tween.currentMotionIndex == 4) {
 				this.tween.motionStart['x'] = s.mouseX;
 				this.tween.motionStart['y'] = s.mouseY;
 			}
@@ -81,6 +82,7 @@ let tween_example = function ( sketch ) {
 				)
 			)
 		}
+		p5.tween.manager.restartAll();
 	}
 
 	s.stepDynamics = function(){
@@ -88,11 +90,11 @@ let tween_example = function ( sketch ) {
 			cp.step();
 		}
 		p5.tween.manager.update(s.deltaTime);
+		if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll();}
 	}
 
 	s.drawOnce = function(){
 		s.background("#000");
-		
 		s.rectMode(s.CENTER)
 		for (var cp of Object.values(drawables)) {
 			cp.draw()			

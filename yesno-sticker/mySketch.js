@@ -14,6 +14,7 @@ let yesno_sticker = function ( sketch ) {
 	var checkmark_fill, checkmark_fill_img;
 	var spatialGradient;
 	var gridSize = 30;
+	
 	class YesNoSticker {
 		constructor() {
 			this.t = 0;
@@ -135,12 +136,7 @@ let yesno_sticker = function ( sketch ) {
 	}
 
 	s.stepDynamics = function(){
-		let millis = s.millis();
 		s.stepGradient();
-		// for (var cp of Object.values(colorPoints)) {
-		// 	cp.p.step(millis);
-		// 	cp.c.step(millis);
-		// }
 		p5.tween.manager.update(s.deltaTime);
 		if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll();}
 
@@ -167,7 +163,6 @@ let yesno_sticker = function ( sketch ) {
 		s.prepareNewSeeds();
 
     }
-
 
 	s.drawFrame = function() {
 		s.clear()

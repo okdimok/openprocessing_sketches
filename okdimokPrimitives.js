@@ -136,8 +136,8 @@ var okdimokPrimitives = function (sketch) {
         set_point(point) { this.p = point; }
     }
 
-    // Returns the function that takes a number of tuples as it arguments
-    // (lerpable, weight)
+    // Returns the function that takes a number of pairs as it arguments
+    // [lerpable, weight]
     // and linearly interpolates them
     this.lerpManyPrototype = function(channel_array_getter, final_wrapper) {
         return function(...colors) {
@@ -295,6 +295,72 @@ var okdimokPrimitives = function (sketch) {
         }
         
     }
+
+    this.Path = class Path {
+        constructor() {
+            // A Path is an arraylist of points (Vector objects)
+            this.points = [];
+            this.lengths = [];
+            this.speeds = [];
+            this.cum_lengths = [];
+            this.closed = s.OPEN;
+        }
+
+        // Add a point to the path
+        addPoint(p, speed) {
+            speed ??= 1;
+            this.points.push(p);
+            if (this.lengths.length === 0) { this.lengths.push(0); }
+            else {
+                this.lengths.push(p5.Vector.sub(p, this.points[this.points.length - 2]).mag()/speed);
+                this.speeds.push(speed);
+            }
+            this.update_cum_lengths()
+            return this;
+        }
+        
+        update_cum_lengths(){
+            let sum = 0;
+            this.cum_lengths = this.lengths.map( (sum = 0, n => sum += n)) ;
+        }
+        
+        close(speed) {
+            this.addPoint(this.points[0], speed)
+            this.closed = s.CLOSE;
+            return this;
+        }
+        
+        getTotalLength() {
+            return this.cum_lengths[this.cum_lengths.length - 1];
+        }
+
+        getPosAtT(t) {
+            t = t % 1;
+            let l = t*this.getTotalLength();
+            // First need to find out the segment
+            let right_end = this.cum_lengths.reduce((prev, cur, ind) => {
+                if (prev) return prev;
+                if (cur > l) return ind;
+                return undefined;
+            });
+            let left_end = right_end - 1;
+            return utils.lerpManyVectors(
+                [this.points[left_end], this.cum_lengths[right_end] - l],
+                [this.points[right_end], l - this.cum_lengths[left_end]]
+            );
+        }
+
+        // Draw the path
+        display() {
+            s.stroke("red");
+            s.strokeWeight(1);
+            s.beginShape();
+            for (let v of this.points) {
+                s.vertex(v.x, v.y);
+            }
+            s.endShape(this.closed);
+        }
+    } 
 
     if (p5.hasOwnProperty('tween')) {
         let tween_prev_update = p5.tween.manager.update.bind(p5.tween.manager);
