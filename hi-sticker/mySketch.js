@@ -81,6 +81,9 @@ let hi_sticker = function ( sketch ) {
 	class HPath extends LightPath {
 		beforeDraw() {
 			s.translate(-10*this.rad, 0);
+			// s.fill("#FFF")
+			// s.text(this.progress, 0, 0);
+			// s.noFill();
 		}
 
 		setPath() {
@@ -151,38 +154,27 @@ let hi_sticker = function ( sketch ) {
 	}
 
 
-
 	s.drawBg = function() { s.background("#000"); }
 
-	s.prepareNewSpatialGradient = function(){
-	}
-
-	s.stepGradient = function(){
-
-	}
-
-	s.drawGradientOnce = function(s){
-
-	}
-
 	s.prepareNewSeeds = function(){
-		s.prepareNewSpatialGradient();
 		drawables = [new HPath(), new IPath(), new ITopPath()]
 		p5.tween.manager.restartAll();
 	}
 
 	s.stepDynamics = function(){
-		s.stepGradient();
-		if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll();}
 		p5.tween.manager.update(s.deltaTime);
-
+		if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll(); }
 	}
 
 	s.drawOnce = function(){
 		s.clear();
 		// s.background("#0f0");
+		// s.text(s.millis(), 0, 0)
+		// s.text(s.deltaTime, 0, 30)
 		for (var d of Object.values(drawables)) {
-			d.draw()			
+			d.draw()
+			s.fill("#FFF")
+			
 		}
 
 	}

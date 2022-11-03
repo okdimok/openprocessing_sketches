@@ -63,6 +63,7 @@ var okdimokPrimitives = function (sketch) {
         let draw = function () {
             if (s.animLoop.elapsedLoops === options.startLoop && s.animLoop.elapsedFrames === 0) {
                 capturer.start()
+                s.fixDeltaTime = s.realFixDeltaTime;
             }
             real_draw()
             if (s.animLoop.elapsedLoops < options.endLoop &&
@@ -77,6 +78,7 @@ var okdimokPrimitives = function (sketch) {
                 capturer.stop();
                 capturer.save();
                 saved = true;
+                s.fixDeltaTime = () => true;
             }
         }
 
@@ -397,14 +399,8 @@ var okdimokPrimitives = function (sketch) {
                 this.qinit = q.copy();
                 this.step(0);
                 this.tween = tween_create_func(q);
-            }
-
-            
-            
-            step_impl() {
-
-            }
-            
+            }            
+            step_impl() { }
         }
 
         // p5.tween.manager.Tween =  p5.tween.Tween;
@@ -425,7 +421,11 @@ var okdimokPrimitives = function (sketch) {
             s.draw = s.drawFrame;
         }
         // s.prev_millis = s.millis();
-        // s.registerMethod('pre', () => {let m = s.millis(); s.deltaTime = m - s.prev_millis; s.prev_millis = m});
+
+        // get applied appropriately in run_ccapture
+        s.realFixDeltaTime = function() {s.deltaTime = 1000./s.fps + 1e-6}
+        s.fixDeltaTime = function() {}
+        s.registerMethod('pre', () => {s.fixDeltaTime()});
    
         s.keyTyped = function() {
             if (s.key === 's') {
