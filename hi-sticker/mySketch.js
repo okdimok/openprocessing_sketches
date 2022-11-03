@@ -43,7 +43,10 @@ let hi_sticker = function ( sketch ) {
 			))
 			this.progress = 0
 			this.addProgressTween()
+			this.afterConstructor()
 		}
+
+		afterConstructor() {}
 
 		addProgressTween() {
 			this.progressTween = p5.tween.manager.addTween(this)
@@ -86,6 +89,18 @@ let hi_sticker = function ( sketch ) {
 			// s.noFill();
 		}
 
+		addProgressTween() {
+			this.progressTween = p5.tween.manager.addTween(this)
+				.setSketch(s)
+				.addLastMotion('progress', 1/3.)
+				.startLoop()
+		}
+
+		afterConstructor() {
+			let cols = this.colors.slice(0, this.total_n/3);
+			this.colors = Array.prototype.concat(cols, cols, cols)
+		}
+
 		setPath() {
 			let r = this.rad;
 			let h = 10, w = 3;
@@ -103,6 +118,7 @@ let hi_sticker = function ( sketch ) {
 				.addPoint(new p5.Vector(-(w+2)*r, r*h))
 				.addPoint(new p5.Vector(-w*r, r*h))
 				.close();
+			this.total_n = 36;
 		}
 		
 	}
