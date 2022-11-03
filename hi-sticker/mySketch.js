@@ -29,7 +29,7 @@ let hi_sticker = function ( sketch ) {
 	}
 
 	class LightPath {
-		constructor() {
+		constructor(shift) {
 			this.rad = 10;
 			// h is the total height  in diameters
 			// w is the width of the middle bar in diameters
@@ -41,6 +41,12 @@ let hi_sticker = function ( sketch ) {
 				utils.randomIn(0.8, 1.),
 				utils.randomIn(0.5, 0.6)
 			))
+			this.shift = shift ?? s.floor(this.total_n/3);
+			this.colors_shifted = Array.prototype.concat(
+				this.colors.slice(this.shift, this.colors.length),
+				this.colors.slice(0, this.shift),
+			);
+
 			this.progress = 0
 			this.addProgressTween()
 			this.afterConstructor()
@@ -74,7 +80,9 @@ let hi_sticker = function ( sketch ) {
 			this.path.display()
 			for (var i = 0., j = 0; j < this.total_n; i+=1./this.total_n, j++) {
 				let p = this.path.getPosAtT(i + this.progress);
-				s.drawConcetric(p, this.rad, this.colors[j])
+				let c1 = this.colors[j], c2 = this.colors_shifted[j];
+				let c = utils.lerpManyColors([c1, 1 - s.animLoop.progress], [c2, s.animLoop.progress])
+				s.drawConcetric(p, this.rad, c)
 			}
 			s.pop()
 		}
@@ -97,8 +105,8 @@ let hi_sticker = function ( sketch ) {
 		}
 
 		afterConstructor() {
-			let cols = this.colors.slice(0, this.total_n/3);
-			this.colors = Array.prototype.concat(cols, cols, cols)
+			// let cols = this.colors.slice(0, this.total_n/3);
+			// this.colors = Array.prototype.concat(cols, cols, cols)
 		}
 
 		setPath() {
@@ -173,7 +181,7 @@ let hi_sticker = function ( sketch ) {
 	s.drawBg = function() { s.background("#000"); }
 
 	s.prepareNewSeeds = function(){
-		drawables = [new HPath(), new IPath(), new ITopPath()]
+		drawables = [new HPath(), new IPath(0), new ITopPath(0)]
 		p5.tween.manager.restartAll();
 	}
 
