@@ -373,7 +373,7 @@ var okdimokPrimitives = function (sketch) {
             }
         }
         p5.tween.Tween.prototype.setSketch = function (s) { this.s = s; return this;}
-        p5.tween.Tween.prototype.getTotalDuration = function() {return this.motions.map(m=>m.duration).reduce((a, b) => a + b);}
+        p5.tween.Tween.prototype.getTotalDuration = function() {return this.motions.map(m=>m.duration).reduce((a, b) => a + b, 0);}
         p5.tween.Tween.prototype.addLastMotion = function (key, target, easing = 'linear') {
             console.assert(s, "Sketch has to be set");
             return this.addMotion(key, target, s.loop*1000 - this.getTotalDuration(), easing);
