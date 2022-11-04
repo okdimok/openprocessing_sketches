@@ -14,16 +14,30 @@ let hi_sticker = function ( sketch ) {
 	var gridSize = 30;
 	var drawables = [];
 
+	// s.drawConcetric = function(p, rref, cref) {
+	// 	let c = s.color(cref);
+	// 	let dr = 1, maxr = 1.5*rref, minr = 2 ;
+	// 	let n = s.floor((maxr-minr)/dr);
+	// 	c.setAlpha(255/n*2);
+	// 	for (let i = minr; i < maxr; i+=dr) {
+	// 		s.fill(c)
+	// 		s.circle(p.x, p.y, 2*i);
+	// 	}
+	// 	c.setAlpha(255);
+	// 	s.fill(c)
+	// 	s.circle(p.x, p.y, 0.99*rref);
+	// }
+
 	s.drawConcetric = function(p, rref, cref) {
-		let c = s.color(cref);
+		let c = cref.copy();
 		let dr = 1, maxr = 1.5*rref, minr = 2 ;
 		let n = s.floor((maxr-minr)/dr);
-		c.setAlpha(255/n*2);
+		c.setAlpha(1./n*2);
 		for (let i = minr; i < maxr; i+=dr) {
 			s.fill(c)
 			s.circle(p.x, p.y, 2*i);
 		}
-		c.setAlpha(255);
+		c.setAlpha(1.);
 		s.fill(c)
 		s.circle(p.x, p.y, 0.99*rref);
 	}
@@ -36,11 +50,12 @@ let hi_sticker = function ( sketch ) {
 			let r = this.rad;
 			this.setPath();
 			this.total_n ??= s.floor(this.path.getTotalLength()/2/r/1.3);
-			this.colors = new Array(this.total_n).fill(0).map(() => utils.hslFracToColor(
+			this.colors = new Array(this.total_n).fill(0).map(() => [
 				utils.randomIn(0., 1.),
 				utils.randomIn(0.8, 1.),
-				utils.randomIn(0.5, 0.6)
-			))
+				utils.randomIn(0.5, 0.6),
+				1.
+			])
 			this.shift = shift ?? s.floor(this.total_n/3);
 			this.colors_shifted = Array.prototype.concat(
 				this.colors.slice(this.shift, this.colors.length),
@@ -81,8 +96,8 @@ let hi_sticker = function ( sketch ) {
 			for (var i = 0., j = 0; j < this.total_n; i+=1./this.total_n, j++) {
 				let p = this.path.getPosAtT(i + this.progress);
 				let c1 = this.colors[j], c2 = this.colors_shifted[j];
-				let c = utils.lerpManyColors([c1, 1 - s.animLoop.progress], [c2, s.animLoop.progress])
-				s.drawConcetric(p, this.rad, c)
+				let c = utils.lerpManyArrays([c1, 1 - s.animLoop.progress], [c2, s.animLoop.progress])
+				s.drawConcetric(p, this.rad, utils.newUnitColor(s.HSL, c))
 			}
 			s.pop()
 		}
@@ -196,9 +211,7 @@ let hi_sticker = function ( sketch ) {
 		// s.text(s.millis(), 0, 0)
 		// s.text(s.deltaTime, 0, 30)
 		for (var d of Object.values(drawables)) {
-			d.draw()
-			s.fill("#FFF")
-			
+			d.draw()			
 		}
 
 	}

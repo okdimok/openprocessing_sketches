@@ -124,6 +124,31 @@ var okdimokPrimitives = function (sketch) {
         return "00";
     }
 
+    // mode in s.RGB, s.HSL, s.HSB
+    // maxes (array of 4 numbers)
+    // values (array of 4 numbers)
+    this.newUnitColor = function(mode, values) {
+        let maxes = {};
+        maxes[mode] = [1, 1, 1, 1];
+        let c = {
+            _colorMode: mode,
+            _colorMaxes: maxes
+        }
+        return new p5.Color(c, values);
+
+    }
+
+    p5.Color.prototype.copy = function(){
+        let c = {
+            _colorMode: this.mode,
+            _colorMaxes: this.maxes
+        }
+        let cc = new p5.Color(c, this._array)
+        cc._array = this._array;
+        cc.levels = this.levels;
+        return cc;
+    }
+
     this.ColorPoint = class ColorPoint {
         constructor(point, color) {
             this.p = point;
@@ -157,6 +182,10 @@ var okdimokPrimitives = function (sketch) {
     }
 
     this.lerpManyColors = this.lerpManyPrototype((color) => color.levels, s.color.bind(s))
+    // note this doesn't work as expected, because the _array and thee levels are stored in RGBA
+    // search for "// Convert to RGBA and return." in p5.js
+    // this.lerpManyHSLUnitColors = this.lerpManyPrototype((color) => color._array, function(...vals) {return utils.newUnitColor(s.HSL, vals)})
+    // this.lerpManyHSBUnitColors = this.lerpManyPrototype((color) => color._array, function(...vals) {return utils.newUnitColor(s.HSB, vals)})
     this.lerpManyArrays = this.lerpManyPrototype((color) => color, function(...args) {return args})
     this.lerpManyVectors = this.lerpManyPrototype((color) => color.array(), function(...args) {return new p5.Vector(...args)})
 
