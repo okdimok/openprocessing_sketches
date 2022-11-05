@@ -14,20 +14,6 @@ let hi_sticker = function ( sketch ) {
 	var gridSize = 30;
 	var drawables = [];
 
-	// s.drawConcetric = function(p, rref, cref) {
-	// 	let c = s.color(cref);
-	// 	let dr = 1, maxr = 1.5*rref, minr = 2 ;
-	// 	let n = s.floor((maxr-minr)/dr);
-	// 	c.setAlpha(255/n*2);
-	// 	for (let i = minr; i < maxr; i+=dr) {
-	// 		s.fill(c)
-	// 		s.circle(p.x, p.y, 2*i);
-	// 	}
-	// 	c.setAlpha(255);
-	// 	s.fill(c)
-	// 	s.circle(p.x, p.y, 0.99*rref);
-	// }
-
 	s.drawConcetric = function(p, rref, cref) {
 		let c = cref.copy();
 		let dr = 1, maxr = 1.5*rref, minr = 2 ;
