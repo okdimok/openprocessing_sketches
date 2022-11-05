@@ -96,7 +96,7 @@ let hi_sticker = function ( sketch ) {
 			for (var i = 0., j = 0; j < this.total_n; i+=1./this.total_n, j++) {
 				let p = this.path.getPosAtT(i + this.progress);
 				let c1 = this.colors[j], c2 = this.colors_shifted[j];
-				let c = utils.lerpManyArrays([c1, 1 - s.animLoop.progress], [c2, s.animLoop.progress])
+				let c = utils.lerpTwoUnitHSLTriplets([c1, 1 - s.animLoop.progress], [c2, s.animLoop.progress])
 				s.drawConcetric(p, this.rad, utils.newUnitColor(s.HSL, c))
 			}
 			s.pop()

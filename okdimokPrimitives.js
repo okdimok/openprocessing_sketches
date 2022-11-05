@@ -188,6 +188,31 @@ var okdimokPrimitives = function (sketch) {
     // this.lerpManyHSBUnitColors = this.lerpManyPrototype((color) => color._array, function(...vals) {return utils.newUnitColor(s.HSB, vals)})
     this.lerpManyArrays = this.lerpManyPrototype((color) => color, function(...args) {return args})
     this.lerpManyVectors = this.lerpManyPrototype((color) => color.array(), function(...args) {return new p5.Vector(...args)})
+    // the format is the same as for the lerpManyColors, uses Arrays as inputs and outpus
+    this.lerpTwoUnitHSLTriplets = function(...colors) {
+        console.assert(colors.length == 2, "More than two hsl colors")
+        let h0 = colors[0][0][0], h1 = colors[1][0][0];
+        let new_color;
+        if (s.abs(h1-h0) >= 0.5) {
+            if (h0 < h1) { 
+                colors[0][0][0] += 1; // h0 
+            }
+            else { 
+                colors[1][0][0] += 1; // h1
+            }
+            new_color = utils.lerpManyArrays(...colors);
+            if (h0 < h1) { 
+                colors[0][0][0] -= 1; // h0 
+            }
+            else { 
+                colors[1][0][0] -= 1; // h1
+            }
+            new_color[0] %= 1;
+        } else {
+            new_color = utils.lerpManyArrays(...colors);
+        }
+        return new_color;
+    }
 
     this.middle = function (points){
         let middle = new p5.Vector();
