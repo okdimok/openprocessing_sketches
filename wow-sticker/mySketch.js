@@ -43,7 +43,7 @@ let wow_sticker = function ( sketch ) {
 				utils.randomIn(0.5, 0.6),
 				1.
 			])
-			this.shift = shift ?? s.floor(this.total_n/3);
+			this.shift ??= shift ?? s.floor(this.total_n/3);
 			this.colors_shifted = Array.prototype.concat(
 				this.colors.slice(this.shift, this.colors.length),
 				this.colors.slice(0, this.shift),
@@ -150,6 +150,7 @@ let wow_sticker = function ( sketch ) {
 				.addPoint(new p5.Vector(-dx*r, 0))
 				.close();
 			this.total_n = 36;
+			this.shift = 0;
 		}
 
 	}
