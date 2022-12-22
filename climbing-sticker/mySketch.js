@@ -36,7 +36,7 @@ let climbing_sticker = function ( sketch ) {
 	s.drawBg = function() { s.background("#000"); }
 
 	s.prepareNewSeeds = function(){
-		drawables = [new ImageRoling("wall.jpg")]
+		drawables = [new ImageRoling(utils.parsedHash.get("img") ?? "wall.jpg")]
 		p5.tween.manager.restartAll();
 	}
 
