@@ -59,7 +59,7 @@ let svetlitsa_sticker = function ( sketch ) {
 			let base = 1., opacity = 0.1;
 			this.gr.fill(utils.newUnitColor(s.RGB, [base, base, base, opacity]));
 			let n_concentric = 100;
-			let w = 400, h = 300;
+			let w = 450, h = 300;
 			for (let i = 1; i <= n_concentric; i++) {
 				this.gr.ellipse(0, 0, w*i/n_concentric, h*i/n_concentric,)
 			}
@@ -74,16 +74,32 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.h = 200
 			this.int_gr = s.createGraphics(this.w, this.h);
 			this.mask = s.createGraphics(this.w, this.h);
+			this.text = "Svetlitsa"
+			this.ws = [55, 54, 45, 30,
+				28, 25, 28, 39,
+				 45]
+		    this.colors = new Array(this.ws.length).fill(0).map(() => 
+			utils.newUnitColor(s.HSL,
+			[
+			   utils.randomIn(0., 1.),
+			   utils.randomIn(0.8, 1.),
+			   utils.randomIn(0.5, 0.6),
+			   1.
+		   ]))
+		   this.colors = ["#0FF", "#0FF", "#0FF", "#0F0",
+		   	 	"#F0F", "#F00", "#F00", "#DD0",
+				"#F0F"
+		   ]
 		}
 
 		draw() {
 			this.int_gr.clear()
 			this.int_gr.resetMatrix()
-			this.int_gr.translate(this.w/2, this.h/2)
 			this.mask.clear()
 			this.mask.resetMatrix()
 			this.mask.translate(this.w/2, this.h/2)
 			this.draw_text_overlay()
+			// this.draw_line("Svetlitsa")
 		}
 
 		draw_text_simple(){
@@ -98,9 +114,15 @@ let svetlitsa_sticker = function ( sketch ) {
 
 		draw_text_overlay(){
 			this.int_gr.noStroke()
-			this.int_gr.rectMode(s.CENTER)
-			this.int_gr.fill("red")
-			this.int_gr.rect(0, 0, 100, 100)
+			this.int_gr.rectMode(s.CORNER)
+			
+			let x = 0;
+			this.ws.map((w, i) => {
+				this.int_gr.fill(this.colors[i])
+				this.int_gr.rect(x, 0, w, this.h)
+				x += w
+			})
+			
 
 			this.mask.fill("white")
 			this.mask.rectMode(s.CENTER)
@@ -124,11 +146,14 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.gr.rectMode(s.CENTER)
 			let total_w = this.gr.textWidth(line)
 			let x = -total_w/2;
+			let ws =[];
 			for (let c of line) {
 				let w = this.gr.textWidth(c);
 				this.gr.text(c, x, 0, w, 200)
 				x += w;
+				ws.push(w)
 			}
+			// console.log(ws)
 			
 		}
 	}
