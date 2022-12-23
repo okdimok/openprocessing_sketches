@@ -442,17 +442,79 @@ var okdimokPrimitives = function (sketch) {
             this.inter_shift = inter_shift ?? [0, 0];
         }
 
-        // @param {function} cb - a function to be called  
+        /**
+         * Just executes the cb with every grid point as a parameter
+         * 
+         * @param {function} cb - a function to be called
+         */
         forEach(cb) {
             for (let i = this.width[0]; i <= this.width[1]; i++) {
                 for (let j = this.height[0]; j <= this.height[1]; j++) {
                     let x = this.shift[0]*i + this.inter_shift[0]*j;
                     let y = this.shift[1]*j + this.inter_shift[1]*i;
-                    let p = new p5.Vector(x, y);
-                    cb(p, [i, j], this)
+                    let p = [x, y]
+                    cb([x, y], [i, j], this)
                 }
             }
         }
+
+        /**
+         * Translates to every grid point and then executes cb
+         * 
+         * @param {function} cb - a function to be called
+         */
+        forEachTranslate(cb) {
+            this.forEach(function(p, ij, grid) {
+                s.push()
+                s.translate(p[0], p[1])
+                cb(p, ij, grid)
+                s.pop()
+            })
+        }
+
+        /**
+         * Translates to every grid point, and rotates in a checkerboard pattern and then executes cb
+         * 
+         * @param {function} cb - a function to be called
+         */
+        forEachTranslateRotate(cb) {
+            this.forEachTranslate(function(p, ij, grid) {
+                s.rotate((ij[0] + ij[1])*s.PI)
+                cb(p, ij, grid)
+            })
+        }
+        
+        /**
+         * Modifies shift.y so that triangles align perfectly 
+         */
+        prepareForTriangles() {
+            this.shift[1] = this.shift[0]*s.sqrt(3)
+            return this
+        }
+
+        /**
+         * @return {p5.Vector[]} three Vectors of triangle vertices 
+         */
+        getTriangleVectors () {
+            // console.assert(this.shift[0] == this.shift[1], this.shift)
+            let a = this.shift[0] * 2
+            let h =  this.shift[0] * s.sqrt(3)
+            let top = new p5.Vector(0, h/2);
+            let av = new p5.Vector(0, a);
+            let left = p5.Vector.add(top, av.rotate(-5*s.PI/6))
+            let right = p5.Vector.add(top, av.rotate(-s.PI/3))
+            return [top, left, right]
+        }
+
+        /**
+         * @return {float[]} six coordinates of triangle vertices 
+         */
+        getTriangleVertices () {
+            let [top, left, right] = this.getTriangleVectors()
+            return [top.x, top.y, left.x, left.y, right.x, right.y]
+        }
+
+
     }
 
     if (p5.hasOwnProperty('tween')) {
