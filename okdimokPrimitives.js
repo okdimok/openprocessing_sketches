@@ -445,7 +445,7 @@ var okdimokPrimitives = function (sketch) {
         /**
          * Just executes the cb with every grid point as a parameter
          * 
-         * @param {function} cb - a function to be called
+         * @param {function} cb - a function to be called like cb(p, ij, grid)
          */
         forEach(cb) {
             for (let i = this.width[0]; i <= this.width[1]; i++) {
@@ -461,27 +461,29 @@ var okdimokPrimitives = function (sketch) {
         /**
          * Translates to every grid point and then executes cb
          * 
-         * @param {function} cb - a function to be called
+         * @param {function} cb - a function to be called like cb(p, ij, grid)
          */
-        forEachTranslate(cb) {
+        forEachTranslate(cb, img) {
+            let gr = img ?? s;
             this.forEach(function(p, ij, grid) {
-                s.push()
-                s.translate(p[0], p[1])
+                gr.push()
+                gr.translate(p[0], p[1])
                 cb(p, ij, grid)
-                s.pop()
+                gr.pop()
             })
         }
 
         /**
          * Translates to every grid point, and rotates in a checkerboard pattern and then executes cb
          * 
-         * @param {function} cb - a function to be called
+         * @param {function} cb - a function to be called like cb(p, ij, grid)
          */
-        forEachTranslateRotate(cb) {
+        forEachTranslateRotate(cb, img) {
+            let gr = img ?? s;
             this.forEachTranslate(function(p, ij, grid) {
-                s.rotate((ij[0] + ij[1])*s.PI)
+                gr.rotate((ij[0] + ij[1])*s.PI)
                 cb(p, ij, grid)
-            })
+            }, img)
         }
         
         /**
