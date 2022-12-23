@@ -1,4 +1,4 @@
-let cuboids_sticker = function ( sketch ) {
+let svetlitsa_sticker = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
 	[s.size_x, s.size_y] = utils.getSizeFromHash()
