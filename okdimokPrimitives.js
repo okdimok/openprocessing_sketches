@@ -416,6 +416,45 @@ var okdimokPrimitives = function (sketch) {
         }
     } 
 
+    // public static ArrayList<Point2> build_shifts_grid(ArrayList<Point2> grid, Point2 grid_dims, Point2 inter_shift) {
+    //     ArrayList<Point2> a = new ArrayList<>(); 
+    //     Point2 gd = grid_dims;
+    //     Point2 is = inter_shift;
+    
+    //     for (Point2 g: grid) {
+    //       float i = g.x, j = g.y;
+    //       a.add(new Point2(gd.x*i + is.x*j, gd.y*j + is.y*i));
+    
+    //     }
+    //     return a;
+    //   }
+    this.Grid = class Grid {
+        /**
+        * @param {int[]} width - [0] and [1] are an integer boundaries of the grid width
+        * @param {int[]} height - [0] and [1] are an integer boundaries of the grid height
+        * @param {(p5.Vector|float[])} shift - A shift in px between two adjacent elements
+        * @param {(p5.Vector|float[])} inter_shift - An additional distortional shift
+         */
+        constructor(width, height, shift, inter_shift) {
+            this.width = width
+            this.height = height;
+            this.shift = shift;
+            this.inter_shift = inter_shift ?? [0, 0];
+        }
+
+        // @param {function} cb - a function to be called  
+        forEach(cb) {
+            for (let i = this.width[0]; i <= this.width[1]; i++) {
+                for (let j = this.height[0]; j <= this.height[1]; j++) {
+                    let x = this.shift[0]*i + this.inter_shift[0]*j;
+                    let y = this.shift[1]*j + this.inter_shift[1]*i;
+                    let p = new p5.Vector(x, y);
+                    cb(p, [i, j], this)
+                }
+            }
+        }
+    }
+
     if (p5.hasOwnProperty('tween')) {
         let tween_prev_update = p5.tween.manager.update.bind(p5.tween.manager);
         p5.tween.manager.update = function (deltaTime) {

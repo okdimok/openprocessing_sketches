@@ -1,4 +1,4 @@
-let svetlitsa_sticker = function ( sketch ) {
+let grid_example = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
 	[s.size_x, s.size_y] = utils.getSizeFromHash()
@@ -10,48 +10,7 @@ let svetlitsa_sticker = function ( sketch ) {
 	s.loop = 3;
 	var shifts_grid;
 	
-	class SvetlitsaSticker {
-		constructor() {
-			this.r = 255;
-			this.g = 255;
-			this.b = 255;
-			this.tween = p5.tween.manager.addTween(this)
-				.setSketch(s)
-				.addMotionsSeconds([
-					{ key: 'r', target: 255 },
-					{ key: 'g', target: 0 },
-					{ key: 'b', target: 0 },
-				], s.loop/5, 'easeInOutQuad')
-				.addMotionsSeconds([
-					{ key: 'r', target: 0 },
-					{ key: 'g', target: 255 },
-					{ key: 'b', target: 0 },
-				], s.loop/5, 'easeInOutQuad')
-				.addMotionsSeconds([
-					{ key: 'r', target: 0 },
-					{ key: 'g', target: 0 },
-					{ key: 'b', target: 255 },
-				], s.loop/5, 'easeInOutQuad')
-				.addMotionsSeconds([
-					{ key: 'r', target: 255 },
-					{ key: 'g', target: 0 },
-					{ key: 'b', target: 0 },
-				], s.loop/5, 'easeInOutQuad')
-				.addLastMotions([
-					{ key: 'r', target: this.r },
-					{ key: 'g', target: this.g },
-					{ key: 'b', target: this.b },
-				], 'easeInOutQuad')
-				.startLoop();
-		}
-
-		draw () {
-			s.tint(this.r, this.g, this.b);
-		}
-
-	}
-
-	var svetlitsasticker = new SvetlitsaSticker();
+	
 
 	s.drawBg = function() { s.background("#000"); }
 
@@ -81,7 +40,6 @@ let svetlitsa_sticker = function ( sketch ) {
 		// s.background("#000");
 		s.translate(s.width/2, s.height/2)
 		s.drawPatternOnce()
-		svetlitsasticker.draw();
 
 
 
