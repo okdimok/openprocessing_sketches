@@ -129,8 +129,6 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.gr = graphics
 			this.w = 350
 			this.h = 200
-			this.int_gr = s.createGraphics(this.w, this.h);
-			this.mask = s.createGraphics(this.w, this.h);
 			this.text = "Svetlitsa"
 			this.ws = [55, 54, 45, 30,
 				28, 25, 28, 39,
@@ -147,6 +145,12 @@ let svetlitsa_sticker = function ( sketch ) {
 		   	 	"#F0F", "#F00", "#F00", "#DD0",
 				"#F0F"
 		   ]
+		   this.init_graphics()
+		}
+
+		init_graphics() {
+			this.int_gr = s.createGraphics(this.w, this.h);
+			this.mask = s.createGraphics(this.w, this.h);
 		}
 
 		draw() {
@@ -166,7 +170,7 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.gr.textSize(100)
 			this.gr.textFont("serif")
 			this.gr.rectMode(s.CENTER)
-			this.gr.text("Svetlitsa", 0, 0, 300, 200)
+			this.gr.text(this.text, 0, 0, 300, 200)
 		}
 
 		draw_text_overlay(){
@@ -186,7 +190,7 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.mask.textAlign(s.CENTER, s.CENTER)
 			this.mask.textSize(100)
 			this.mask.textFont("serif")
-			this.mask.text("Svetlitsa", 0, 0, this.w, this.h)
+			this.mask.text(this.text, 0, 0, this.w, this.h)
 			
 			
 			let int_gr_img = this.int_gr.get()
@@ -223,13 +227,27 @@ let svetlitsa_sticker = function ( sketch ) {
 		}
 	}
 	var svetlitsa_text;
+	class SvetlitsaTextRus extends SvetlitsaText {
+		constructor(graphics) {
+			super(graphics)
+			this.text = "Светлица"
+			this.w = 500
+			this.init_graphics()
+			this.colors = ["#0FF", "#0F0", "#0F0", "#0FF",
+		   	 	"#F00", "#F00", "#F0F", "#F0F",
+				"#000"
+		   ]
+		   this.ws = [116, 90, 0, 44,
+		99, 0, 110, 0, 0]
+		}
+	}
 
 	s.drawBg = function() { s.background("#000"); }
 
 	s.prepareNewSeeds = function(){
 		svetlitsatint = new SvetlitsaTint()
 		background_spot = new BackgroundSpot(s, svetlitsatint);
-		svetlitsa_text = new SvetlitsaText(svetlitsatint.canvas);
+		svetlitsa_text = new SvetlitsaTextRus(svetlitsatint.canvas);
 		// iso_cubes_pattern = new IsoCubesPattern(s);
 		p5.tween.manager.restartAll();
 	}
