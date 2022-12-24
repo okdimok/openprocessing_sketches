@@ -38,31 +38,88 @@ let svetlitsa_sticker = function ( sketch ) {
 				], 'easeInOutQuad')
 				.startLoop();
 			this.canvas = s.createGraphics(s.width, s.height);
-			this.canvas.translate(s.width/2, s.height/2)
 		}
 
 		draw () {
 			s.tint(this.r, this.g, this.b);
-			s.image(this.canvas, 0, 0);
+			s.image(this.canvas, -s.width/2, -s.height/2);
+			s.tint(255, 255, 255)
 		}
 
 	}
-
 	var svetlitsatint; // = new SvetlitsaTint();
 	class BackgroundSpot {
-		constructor(graphics) {
+		constructor(graphics, tinter) {
 			this.gr = graphics
+			this.tinter = tinter
+			this.w = 450
+			this.h = 300
+			this.int_gr = s.createGraphics(s.width, s.height);
+			this.base = 1.;
+			this.opacity = 0.1*255;
 		}
 
-		draw() {
-			this.gr.noStroke()
-			let base = 1., opacity = 0.1;
-			this.gr.fill(utils.newUnitColor(s.RGB, [base, base, base, opacity]));
+		draw_one_spot() {
+			this.int_gr.noStroke()
 			let n_concentric = 100;
 			let w = 450, h = 300;
 			for (let i = 1; i <= n_concentric; i++) {
-				this.gr.ellipse(0, 0, w*i/n_concentric, h*i/n_concentric,)
+				this.int_gr.ellipse(0, 0, w*i/n_concentric, h*i/n_concentric,)
 			}
+		}
+
+		draw_red_spot() {
+			this.int_gr.push()
+			this.int_gr.fill(s.color(
+				this.base * this.tinter.r,
+				0,
+				0,
+				this.opacity
+			));
+			this.int_gr.translate(0, -50);
+			this.draw_one_spot()
+			this.int_gr.pop()
+		}
+
+		draw_green_spot() {
+			this.int_gr.push()
+			this.int_gr.fill(s.color(
+				0,
+				this.base * this.tinter.g,
+				0,
+				this.opacity
+			));
+			this.int_gr.translate(30, 30);
+			this.draw_one_spot()
+			this.int_gr.pop()
+		}
+
+		draw_blue_spot() {
+			this.int_gr.push()
+			this.int_gr.fill(s.color(
+				0,
+				0,
+				this.base * this.tinter.b,
+				this.opacity
+			));
+			this.int_gr.translate(-30, 30);
+			this.draw_one_spot()
+			this.int_gr.pop()
+		}
+
+		draw() {
+			this.int_gr.clear()
+			this.int_gr.resetMatrix()
+			this.int_gr.translate(s.width/2, s.height/2)
+			this.int_gr.blendMode(s.ADD)
+
+			this.draw_red_spot()
+			this.draw_green_spot()
+			this.draw_blue_spot()
+			
+			this.gr.blendMode(s.ADD)
+			this.gr.image(this.int_gr, -s.width/2, -s.height/2)
+			this.gr.blendMode(s.BLEND)
 		}
 	}
 	var background_spot;
@@ -130,11 +187,19 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.mask.textSize(100)
 			this.mask.textFont("serif")
 			this.mask.text("Svetlitsa", 0, 0, this.w, this.h)
-
+			
+			
 			let int_gr_img = this.int_gr.get()
 			int_gr_img.mask( this.mask.get() )
 
-			this.gr.image(int_gr_img, -this.w/2, -this.h/2)
+			// this.gr.rectMode(s.CENTER)
+			// this.gr.fill("red")
+			// this.gr.rect(0, 0, 30, 30)
+
+			// this.gr.image(int_gr_img, -this.w/2, -this.h/2)
+			let scale = 0.8
+			this.gr.image(int_gr_img, -this.w/2*scale, -this.h/2*scale, this.w*scale, this.h*scale)
+			// this.gr.image(int_gr_img, 0, 0)
 
 		}
 
@@ -163,8 +228,8 @@ let svetlitsa_sticker = function ( sketch ) {
 
 	s.prepareNewSeeds = function(){
 		svetlitsatint = new SvetlitsaTint()
+		background_spot = new BackgroundSpot(s, svetlitsatint);
 		svetlitsa_text = new SvetlitsaText(svetlitsatint.canvas);
-		background_spot = new BackgroundSpot(svetlitsatint.canvas);
 		// iso_cubes_pattern = new IsoCubesPattern(s);
 		p5.tween.manager.restartAll();
 	}
@@ -175,10 +240,14 @@ let svetlitsa_sticker = function ( sketch ) {
 	}
 
 	s.drawOnce = function(){
-		s.clear();
 		// s.background("#000");
 		// iso_cubes_pattern.draw()
 		svetlitsatint.canvas.clear()
+		svetlitsatint.canvas.resetMatrix()
+		svetlitsatint.canvas.translate(s.width/2, s.height/2)
+		s.clear()
+		s.resetMatrix()
+		s.translate(s.width/2, s.height/2)
 		background_spot.draw()
 		svetlitsa_text.draw()
 		svetlitsatint.draw();
