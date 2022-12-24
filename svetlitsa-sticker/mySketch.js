@@ -202,7 +202,9 @@ let svetlitsa_sticker = function ( sketch ) {
 
 			// this.gr.image(int_gr_img, -this.w/2, -this.h/2)
 			let scale = 0.8
+			this.gr.blendMode(s.MULTIPLY)
 			this.gr.image(int_gr_img, -this.w/2*scale, -this.h/2*scale, this.w*scale, this.h*scale)
+			this.gr.blendMode(s.BLEND)
 			// this.gr.image(int_gr_img, 0, 0)
 
 		}
@@ -237,6 +239,10 @@ let svetlitsa_sticker = function ( sketch ) {
 		   	 	"#F00", "#F00", "#F0F", "#F0F",
 				"#000"
 		   ]
+		//    this.colors = ["#F00", "#F0F", "#F0F", "#F00",
+		//    		"#0FF", "#0FF", "#0F0", "#0F0",
+		// 		"#FFF"
+		//    ]
 		   this.ws = [116, 90, 0, 44,
 		99, 0, 110, 0, 0]
 		}
@@ -247,7 +253,7 @@ let svetlitsa_sticker = function ( sketch ) {
 	s.prepareNewSeeds = function(){
 		svetlitsatint = new SvetlitsaTint()
 		background_spot = new BackgroundSpot(s, svetlitsatint);
-		svetlitsa_text = new SvetlitsaTextRus(svetlitsatint.canvas);
+		svetlitsa_text = new SvetlitsaText(s);
 		// iso_cubes_pattern = new IsoCubesPattern(s);
 		p5.tween.manager.restartAll();
 	}
