@@ -56,7 +56,7 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.h = 300
 			this.int_gr = s.createGraphics(s.width, s.height);
 			this.base = 1.;
-			this.opacity = 0.1*255;
+			this.opacity = 0.1;
 		}
 
 		draw_one_spot() {
@@ -71,10 +71,10 @@ let svetlitsa_sticker = function ( sketch ) {
 		draw_red_spot() {
 			this.int_gr.push()
 			this.int_gr.fill(s.color(
-				this.base * this.tinter.r,
+				this.base*255,
 				0,
 				0,
-				this.opacity
+				this.opacity * this.tinter.r
 			));
 			this.int_gr.translate(0, -50);
 			this.draw_one_spot()
@@ -85,9 +85,9 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.int_gr.push()
 			this.int_gr.fill(s.color(
 				0,
-				this.base * this.tinter.g,
+				this.base * 255,
 				0,
-				this.opacity
+				this.opacity * this.tinter.g
 			));
 			this.int_gr.translate(30, 30);
 			this.draw_one_spot()
@@ -99,8 +99,8 @@ let svetlitsa_sticker = function ( sketch ) {
 			this.int_gr.fill(s.color(
 				0,
 				0,
-				this.base * this.tinter.b,
-				this.opacity
+				this.base * 255,
+				this.opacity * this.tinter.b
 			));
 			this.int_gr.translate(-30, 30);
 			this.draw_one_spot()
