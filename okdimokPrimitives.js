@@ -547,11 +547,11 @@ var okdimokPrimitives = function (sketch) {
             return this.addMotions(actions, s.loop*1000 - this.getTotalDuration(), easing);
         }
         p5.tween.Tween.prototype.addMotionSeconds = function (key, target, duration_s, easing = 'linear') {
-            console.assert(duration_s, "Duration has to be set");
+            console.assert(duration_s !== undefined, "Duration has to be set");
             return this.addMotion(key, target, duration_s*1000, easing);
         }
         p5.tween.Tween.prototype.addMotionsSeconds = function (actions, duration_s, easing = 'linear') {
-            console.assert(duration_s, "Duration has to be set");
+            console.assert(duration_s !== undefined, "Duration has to be set");
             return this.addMotions(actions, duration_s*1000, easing);
         }
 
