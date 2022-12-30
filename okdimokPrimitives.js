@@ -135,7 +135,6 @@ var okdimokPrimitives = function (sketch) {
             _colorMaxes: maxes
         }
         return new p5.Color(c, values);
-
     }
 
     p5.Color.prototype.copy = function(){
@@ -147,6 +146,12 @@ var okdimokPrimitives = function (sketch) {
         cc._array = this._array;
         cc.levels = this.levels;
         return cc;
+    }
+
+    p5.Color.prototype.multiply = function(p){
+        this._array = this._array.map((e, i) => i < 3 ? e * p : e);
+        this.levels = this.levels.map((e, i) => i < 3 ? e * p : e);
+        return this;
     }
 
     this.ColorPoint = class ColorPoint {

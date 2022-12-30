@@ -253,7 +253,7 @@ let svetlitsa_sticker = function ( sketch ) {
 	s.prepareNewSeeds = function(){
 		svetlitsatint = new SvetlitsaTint()
 		background_spot = new BackgroundSpot(s, svetlitsatint);
-		svetlitsa_text = new SvetlitsaText(s);
+		svetlitsa_text = new SvetlitsaTextRus(s);
 		// iso_cubes_pattern = new IsoCubesPattern(s);
 		p5.tween.manager.restartAll();
 	}
