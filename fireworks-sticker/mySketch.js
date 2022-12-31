@@ -12,7 +12,7 @@ let fireworks_sticker = function ( sketch ) {
 	var drawables = [];
 	var fullscreen = false;
 
-	s.drawConcetric = function(x, y, rref, cref) {
+	s.drawConcetric = function(s, x, y, rref, cref) {
 		let c = cref.copy();
 		let dr = 1, maxr = 1.5*rref, minr = 2 ;
 		let n = s.floor((maxr-minr)/dr);
@@ -75,19 +75,26 @@ let fireworks_sticker = function ( sketch ) {
 
 		draw() {
 			this.color.setAlpha(this.alpha)
-			s.fill(this.color)
+			s.g.fill(this.color)
 			// s.rect(this.x, this.y, 2 * rad, 2* rad)
-			let p = new p5.Vector(this.x, this.y)
-			let c = new p5.Vector(s.width/2, s.height/2)
-			if (p.sub(c).mag() < 1.5* s.rref) {
-				s.drawConcetric(this.x, this.y, this.rad, this.color)
-			}
+			// let p = new p5.Vector(this.x, this.y)
+			// let c = new p5.Vector(s.width/2, s.height/2)
+			// if (p.sub(c).mag() < 1.5* s.rref) {
+			s.drawConcetric(s.g, this.x, this.y, this.rad, this.color)
+			// }
 		}
 	}
 
 	s.drawBg = function() { s.background("#000"); }
 
 	s.prepareNewSeeds = function(){
+		s.rref = s.width/3
+		let mask = s.createGraphics(s.width, s.height);
+		s.g = s.createGraphics(s.width, s.height);
+		mask.clear()
+		mask.fill("white")
+		mask.circle(s.width/2, s.height/2, 2*1.5*s.rref);
+		s.circlular_mask = mask.get()
 		drawables = []
 		for (let i = 0; i < 100; i++) {
 			drawables.push(
@@ -108,13 +115,16 @@ let fireworks_sticker = function ( sketch ) {
 
 	s.drawOnce = function(){
 		s.clear();
+		s.g.clear();
 		s.rectMode(s.CENTER)
 		let gray = utils.newUnitColor(s.HSL, [0.5, 0., 0.1, 0.5])
-		s.rref = s.width/3
-		s.drawConcetric(s.width/2, s.height/2, s.rref , gray)
+		// s.drawConcetric(s.g, s.width/2, s.height/2, s.rref , gray)
 		for (var cp of Object.values(drawables)) {
 			cp.draw()			
 		}
+		let int_img = s.g.get()
+		int_img.mask(s.circlular_mask)
+		s.image(int_img, 0, 0)
 	}
 
     s.setup = function() {
