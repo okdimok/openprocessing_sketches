@@ -77,7 +77,11 @@ let fireworks_sticker = function ( sketch ) {
 			this.color.setAlpha(this.alpha)
 			s.fill(this.color)
 			// s.rect(this.x, this.y, 2 * rad, 2* rad)
-			s.drawConcetric(this.x, this.y, this.rad, this.color)
+			let p = new p5.Vector(this.x, this.y)
+			let c = new p5.Vector(s.width/2, s.height/2)
+			if (p.sub(c).mag() < 1.5* s.rref) {
+				s.drawConcetric(this.x, this.y, this.rad, this.color)
+			}
 		}
 	}
 
@@ -106,7 +110,8 @@ let fireworks_sticker = function ( sketch ) {
 		s.clear();
 		s.rectMode(s.CENTER)
 		let gray = utils.newUnitColor(s.HSL, [0.5, 0., 0.1, 0.5])
-		s.drawConcetric(s.width/2, s.height/2, s.width/3, gray)
+		s.rref = s.width/3
+		s.drawConcetric(s.width/2, s.height/2, s.rref , gray)
 		for (var cp of Object.values(drawables)) {
 			cp.draw()			
 		}
