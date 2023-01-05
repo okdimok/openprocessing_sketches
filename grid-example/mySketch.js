@@ -24,6 +24,7 @@ let grid_example = function ( sketch ) {
 	}
 
 	s.prepareNewSeeds = function(){
+		s.noiseSeed(s.millis())
 		shifts_grid = new utils.Grid([-10, 10], [-4, 4], [20, 20]).prepareForTriangles()
 		p5.tween.manager.restartAll();
 	}
