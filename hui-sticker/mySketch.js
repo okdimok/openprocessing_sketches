@@ -59,7 +59,7 @@ let hui_sticker = function ( sketch ) {
 			this.r = 0;
 			this.g = 255;
 			this.b = 0;
-			this.n = 3; // how many times per period?
+			this.n = 4; // how many times per period?
 			this.tween = p5.tween.manager.addTween(this)
 				.setSketch(s)
 				.addMotionsSeconds([
@@ -88,18 +88,86 @@ let hui_sticker = function ( sketch ) {
 	var cl_past, cl_present, cl_future;
 	var n_frames = 5; // the time difference in frames
 
+	class SinColorLoop extends ColorLoop{
+		constructor() {
+			super()
+			this.t = 0;
+			this.tween = p5.tween.manager.addTween(this)
+				.setSketch(s)
+				.addMotionsSeconds([
+					{ key: 't', target: s.TWO_PI },
+				], s.loop/this.n, 'linear')
+				.startLoop()
+			// this.canvas = s.createGraphics(s.width, s.height);
+		}
+
+		c_from_ph(ph) {
+			return s.map(s.cos(this.t + ph), -1, 1, 0, 255)
+		}
+
+		get_color() {
+			let ph = s.TWO_PI/3
+			return s.color(this.c_from_ph(0),
+				this.c_from_ph(ph),
+				this.c_from_ph(2*ph),
+			)
+		}
+
+	}
+
+	s.getSinColorLoopColorAtT = function (t) {
+		 let c_from_ph = function (ph) {
+			return s.map(s.cos(t + ph), -1, 1, 0, 255)
+		}
+		let ph = s.TWO_PI/3
+		return s.color(c_from_ph(1.5*s.PI),
+			c_from_ph(0),
+			c_from_ph(s.PI),
+		)
+	}
+
 	
 	
 	class Hui {
+		constructor(){
+			this.n_pixels = 5;
+			this.total_phase_shift = s.PI/3;
+			this.t = 0;
+			this.n_per_period = 4;
+			this.tween = p5.tween.manager.addTween(this)
+				.setSketch(s)
+				.addMotionsSeconds([
+					{ key: 't', target: s.TWO_PI },
+				], s.loop/this.n_per_period, 'linear')
+				.startLoop()
+			
+		}
+
+		draw_past() {
+			s.push()
+			s.translate(this.n_pixels, 0)
+			for (let i = this.n_pixels; i >= 1; i--) {
+				s.translate(-1, 0)
+				s.fill(s.getSinColorLoopColorAtT(this.t - i*this.total_phase_shift/this.n_pixels))
+				s.drawPlane()
+			}
+			s.pop()
+		}
+
+		draw_future() {
+			s.push()
+			s.translate(-this.n_pixels, 0)
+			for (let i = this.n_pixels; i >= 1; i--) {
+				s.translate(1, 0)
+				s.fill(s.getSinColorLoopColorAtT(this.t + i*this.total_phase_shift/this.n_pixels))
+				s.drawPlane()
+			}
+			s.pop()
+		}
 		draw () {
-			let d = 3;
-			s.fill(cl_past.get_color());
-			s.drawPlane()
-			s.translate(2*d, 0)
-			s.fill(cl_future.get_color());
-			s.drawPlane()
-			s.translate(-d, 0)
-			s.fill(cl_present.get_color());
+			this.draw_past();
+			this.draw_future();
+			s.fill(s.getSinColorLoopColorAtT(this.t))
 			s.drawPlane()
 		}
 	}
@@ -108,18 +176,19 @@ let hui_sticker = function ( sketch ) {
 	s.drawBg = function() { s.background("#000"); }
 
 	s.prepareNewSeeds = function(){
-		cl_past = new ColorLoop()
-		cl_present = new ColorLoop()
-		cl_future = new ColorLoop()
+		let cls = SinColorLoop;
+		cl_past = new cls()
+		cl_present = new cls()
+		cl_future = new cls()
 		hui = new Hui();
 	}
 
 	s.stepDynamics = function(){
 		p5.tween.manager.update(s.deltaTime);
-		if (s.animLoop.elapsedFrames === 0) { cl_past.tween.restart()}
-		if (s.animLoop.elapsedFrames === n_frames) { cl_present.tween.restart()}
-		if (s.animLoop.elapsedFrames === 2*n_frames) { cl_future.tween.restart()}
-		// if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll();}
+		// if (s.animLoop.elapsedFrames === 0) { cl_past.tween.restart()}
+		// if (s.animLoop.elapsedFrames === n_frames) { cl_present.tween.restart()}
+		// if (s.animLoop.elapsedFrames === 2*n_frames) { cl_future.tween.restart()}
+		if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll();}
 	}
 
 	s.drawOnce = function(){
