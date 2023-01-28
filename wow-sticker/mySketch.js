@@ -2,7 +2,7 @@ let wow_sticker = function ( sketch ) {
     let s = sketch;
     let utils = new okdimokPrimitives(sketch);
 	[s.size_x, s.size_y] = utils.getSizeFromHash()
-	[s.size_x, s.size_y] = [512, 250]
+	// [s.size_x, s.size_y] = [512, 250]
 
     var disturbance = 0.3;
 	s.fps = 30;

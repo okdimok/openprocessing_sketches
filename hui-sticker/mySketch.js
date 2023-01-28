@@ -131,7 +131,7 @@ let hui_sticker = function ( sketch ) {
 	class Hui {
 		constructor(){
 			this.n_pixels = 5;
-			this.total_phase_shift = s.PI/3;
+			this.total_phase_shift = s.PI/2;
 			this.t = 0;
 			this.n_per_period = 4;
 			this.tween = p5.tween.manager.addTween(this)

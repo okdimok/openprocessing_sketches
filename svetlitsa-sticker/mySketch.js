@@ -253,7 +253,7 @@ let svetlitsa_sticker = function ( sketch ) {
 	s.prepareNewSeeds = function(){
 		svetlitsatint = new SvetlitsaTint()
 		background_spot = new BackgroundSpot(s, svetlitsatint);
-		svetlitsa_text = new SvetlitsaTextRus(s);
+		svetlitsa_text = new SvetlitsaText(s);
 		// iso_cubes_pattern = new IsoCubesPattern(s);
 		p5.tween.manager.restartAll();
 	}
@@ -264,12 +264,12 @@ let svetlitsa_sticker = function ( sketch ) {
 	}
 
 	s.drawOnce = function(){
-		// s.background("#000");
 		// iso_cubes_pattern.draw()
 		svetlitsatint.canvas.clear()
 		svetlitsatint.canvas.resetMatrix()
 		svetlitsatint.canvas.translate(s.width/2, s.height/2)
 		s.clear()
+		s.background("#000");
 		s.resetMatrix()
 		s.translate(s.width/2, s.height/2)
 		background_spot.draw()
