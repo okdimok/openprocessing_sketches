@@ -54,6 +54,42 @@ let hui_sticker = function ( sketch ) {
 
 	}
 
+	s.drawHeart = function(scale) {
+		// https://svg2p5.com/ 
+		s.push()
+		s.scale(scale??1);
+		s.rotate(s.PI)
+		s.translate(-15, -1631.5);
+		s.translate(3.05, 3.5);
+		s.beginShape();
+		s.vertex(14.9,1631.5);
+		s.bezierVertex(15.7,1631.5,16.5,1631.2,17.2,1630.6);
+		s.bezierVertex(17.5,1630.3,17.8,1629.9,18,1629.5);
+		s.bezierVertex(18.2,1629,18.3,1628.6,18.3,1628);
+		s.bezierVertex(18.3,1626.6,17.7,1625.4,16.5,1624.4);
+		s.bezierVertex(16,1624,15.2,1623.2,13.9,1622.2);
+		s.bezierVertex(12.6,1621.2,12,1620.7,12,1620.7);
+		s.vertex(7.4,1624.5);
+		s.bezierVertex(6.9,1625,6.4,1625.5,6.1,1626.1);
+		s.bezierVertex(5.8,1626.7,5.6,1627.3,5.6,1627.9);
+		s.bezierVertex(5.6,1628.4,5.7,1629.,5.8,1629.4);
+		s.bezierVertex(6.0,1630.1,6.5,1630.7,7.1,1631.1);
+		s.bezierVertex(7.7,1631.5,8.3,1631.7,9,1631.7);
+		s.bezierVertex(10.2,1631.7,11.2,1631.2,11.9,1630.2);
+		s.bezierVertex(12.8,1631,13.8,1631.5,14.9,1631.5);	
+		s.endShape(s.CLOSE);
+
+
+		s.pop()
+		
+		// s.rectMode(s.CENTER)
+		// s.fill('blue')
+		// s.rect(0,0, 2, 100)
+		// s.rect(0,0, 100, 2)
+		
+	}
+
+
 	class ColorLoop {
 		constructor() {
 			this.r = 0;
@@ -149,7 +185,7 @@ let hui_sticker = function ( sketch ) {
 			for (let i = this.n_pixels; i >= 1; i--) {
 				s.translate(-1, 0)
 				s.fill(s.getSinColorLoopColorAtT(this.t - i*this.total_phase_shift/this.n_pixels))
-				s.drawPlane()
+				s.drawHeart()
 			}
 			s.pop()
 		}
@@ -160,7 +196,7 @@ let hui_sticker = function ( sketch ) {
 			for (let i = this.n_pixels; i >= 1; i--) {
 				s.translate(1, 0)
 				s.fill(s.getSinColorLoopColorAtT(this.t + i*this.total_phase_shift/this.n_pixels))
-				s.drawPlane()
+				s.drawHeart()
 			}
 			s.pop()
 		}
@@ -168,7 +204,7 @@ let hui_sticker = function ( sketch ) {
 			this.draw_past();
 			this.draw_future();
 			s.fill(s.getSinColorLoopColorAtT(this.t))
-			s.drawPlane()
+			s.drawHeart()
 		}
 	}
 	var hui;
@@ -195,6 +231,7 @@ let hui_sticker = function ( sketch ) {
 		s.background("#888");
 		s.resetMatrix()
 		s.translate(s.width/2, s.height/2)
+		// s.drawHeart()
 		hui.draw();
 
 
