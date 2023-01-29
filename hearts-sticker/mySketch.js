@@ -74,31 +74,23 @@ let hearts_sticker = function ( sketch ) {
 
 		draw_one_gradient(phase, scale_factor) {
 			scale_factor ??=1
-			s.push()
-			s.translate(0, -60)
 			for (let i = this.gradient_steps; i >= 1; i--) {
 				s.fill(s.getSinColorLoopColorAtT(phase - i*this.total_phase_shift/this.gradient_steps))
 				s.drawHeart(i*this.final_scale/this.gradient_steps*scale_factor)
 			}
-			s.pop()
 		}
 
-		// draw_future() {
-		// 	s.push()
-		// 	s.translate(-this.n_pixels, 0)
-		// 	for (let i = this.n_pixels; i >= 1; i--) {
-		// 		s.translate(1, 0)
-		// 		s.fill(s.getSinColorLoopColorAtT(this.t + i*this.total_phase_shift/this.n_pixels))
-		// 		s.drawHeart()
-		// 	}
-		// 	s.pop()
-		// }
 		draw () {
+			s.push()
+			s.translate(0, -60)
+			s.fill("#888");
+			s.drawHeart(this.final_scale*1.35)
 			this.draw_one_gradient(this.t, 1.015);
 			this.draw_one_gradient(this.t + this.total_phase_shift);
 			// this.draw_future();
 			// s.fill(s.getSinColorLoopColorAtT(this.t))
 			// s.drawHeart()
+			s.pop()
 		}
 	}
 	var hearts;
@@ -111,14 +103,11 @@ let hearts_sticker = function ( sketch ) {
 
 	s.stepDynamics = function(){
 		p5.tween.manager.update(s.deltaTime);
-		// if (s.animLoop.elapsedFrames === 0) { cl_past.tween.restart()}
-		// if (s.animLoop.elapsedFrames === n_frames) { cl_present.tween.restart()}
-		// if (s.animLoop.elapsedFrames === 2*n_frames) { cl_future.tween.restart()}
 		if (s.animLoop.elapsedFrames === 0) { p5.tween.manager.restartAll();}
 	}
 
 	s.drawOnce = function(){
-		s.background("#888");
+		// s.background("#888");
 		s.resetMatrix()
 		s.translate(s.width/2, s.height/2)
 		// s.drawHeart()

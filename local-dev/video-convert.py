@@ -18,10 +18,10 @@ def get_main_dir_filename_frames_dir(args, tar):
         return main_dir, filename, abspath(tar)
 
 
-def process_tar(tar):
+def process_tar(args, tar):
     if not tar.endswith(tar):
         raise NameError(f"{tar} is not tar file")
-    if not isfile(tar):
+    if not isfile(abspath(tar)):
         raise FileNotFoundError(f"{tar} — no such file, maybe a dir?")
     path = dirname(abspath(tar))
     closest_dir = basename(path)
@@ -32,7 +32,7 @@ def process_tar(tar):
         shutil.move(tar, new_tar)
         tar = new_tar
     
-    main_dir, filename, frames_dir = get_main_dir_filename_frames_dir(tar)
+    main_dir, filename, frames_dir = get_main_dir_filename_frames_dir(args, tar)
     if not isdir(frames_dir):
         os.makedirs(frames_dir)
         subprocess.run(["tar", "-xf", tar, "-C", frames_dir])
@@ -75,7 +75,7 @@ def process_mp4(args, tar):
     
     # https://trac.ffmpeg.org/wiki/Encode/H.264
     os.system(f"ffmpeg -y -framerate 30 -f image2 -i {frames} \
-                -c:v libx264 -preset slow -tune animation -pix_fmt yuv420p \
+                -c:v libx264 -crf {args.crf} -preset slow -tune animation -pix_fmt yuv420p \
                 -vf scale=512:-1 {output_file}")
 
 def process_webp(args, tar):
@@ -106,6 +106,7 @@ def parse_args():
     parser.add_argument("-f", "--format", help="target format for the output", type=str, required=True, nargs="+")
     parser.add_argument("-y", "--overwrite", help="if one should overwite the video", action="store_true")
     parser.add_argument("-b", "--bandwidth", help="ffmpeg bv for webm", type=str, default="-b:v 300k")
+    parser.add_argument("--crf", help="ffmpeg crf for mp4", type=int, default=17)
     # parser.add_argument("-m", "--ffmpeg-flags", help="additional ffmpeg flags", type=str)
     parser.add_argument("--frames-format", type=str, default="%07d.png")
     parser.add_argument("--frames", type=str, nargs="*")
@@ -125,10 +126,10 @@ def run(args):
 
 
     if args.tars:
-        for fmt in args.format:
-            processor_name = f"process_{fmt}"
-            for tar in args.tars:
-                tar = process_tar(tar)
+        for tar in args.tars:
+            tar = process_tar(args, tar)
+            for fmt in args.format:
+                processor_name = f"process_{fmt}"
                 globals()[processor_name](args, tar)
     
     if args.frames:
