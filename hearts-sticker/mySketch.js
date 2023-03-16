@@ -75,7 +75,7 @@ let hearts_sticker = function ( sketch ) {
 		draw_one_gradient(phase, scale_factor) {
 			scale_factor ??=1
 			for (let i = this.gradient_steps; i >= 1; i--) {
-				s.fill(s.getSinColorLoopColorAtT(phase - i*this.total_phase_shift/this.gradient_steps))
+				s.fill(s.getSinColorLoopColorAtT(phase + i*this.total_phase_shift/this.gradient_steps))
 				s.drawHeart(i*this.final_scale/this.gradient_steps*scale_factor)
 			}
 		}
@@ -84,13 +84,14 @@ let hearts_sticker = function ( sketch ) {
 			s.textSize(200)
 			s.textAlign(s.CENTER, s.CENTER)
 			let phase_shift = 0.3*s.PI
+			let text_vs_t_phase = 0;
 			let y_shift = 3;
 			let y0 = 50;
-			s.fill(s.getSinColorLoopColorAtT(this.t + s.PI + phase_shift))
+			s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase + phase_shift))
 			s.text("S", 0, y0+y_shift)
-			s.fill(s.getSinColorLoopColorAtT(this.t + s.PI - phase_shift))
+			s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase - phase_shift))
 			s.text("S", 0, y0-y_shift)
-			s.fill(s.getSinColorLoopColorAtT(this.t + s.PI))
+			s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase))
 			s.text("S", 0, y0)
 			s.pop()
 		}
@@ -98,13 +99,18 @@ let hearts_sticker = function ( sketch ) {
 		draw () {
 			s.push()
 			// s.background("#888")
-			s.fill("#888");
-			s.ellipse(0,0,s.width)
+			// s.fill("#E1D22D");
+			// s.fill("#888");
+			// s.fill("#A68");
+			// s.fill(s.getSinColorLoopColorAtT(this.t + s.PI));
+			// s.ellipse(0,0,s.width)
+			// s.fill("#888");
+			// s.ellipse(0,0,s.width-30)
 			s.translate(0, -40)
 			// s.drawHeart(this.final_scale*1.35)
 			this.draw_one_gradient(this.t, 1.015);
 			this.draw_one_gradient(this.t + this.total_phase_shift);
-			// this.draw_text()
+			this.draw_text()
 			// this.draw_future();
 			// s.fill(s.getSinColorLoopColorAtT(this.t))
 			// s.drawHeart()
@@ -130,7 +136,6 @@ let hearts_sticker = function ( sketch ) {
 		s.translate(s.width/2, s.height/2)
 		// s.drawHeart()
 		hearts.draw();
-
 
 	}
 
