@@ -87,11 +87,12 @@ let hearts_sticker = function ( sketch ) {
 			let text_vs_t_phase = 0;
 			let y_shift = 3;
 			let y0 = 50;
-			s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase + phase_shift))
-			s.text("S", 0, y0+y_shift)
-			s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase - phase_shift))
-			s.text("S", 0, y0-y_shift)
-			s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase))
+			// s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase + phase_shift))
+			// s.text("S", 0, y0+y_shift)
+			// s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase - phase_shift))
+			// s.text("S", 0, y0-y_shift)
+			// s.fill(s.getSinColorLoopColorAtT(this.t + text_vs_t_phase))
+			s.fill("#000")
 			s.text("S", 0, y0)
 			s.pop()
 		}
