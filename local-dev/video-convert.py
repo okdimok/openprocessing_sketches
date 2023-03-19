@@ -97,7 +97,17 @@ def process_gif(args, tar):
 
     frames=re.sub("%\d+d","*",frames)
     print ("GIF limitations: delay is 30 ms instead of 33.333")
-    os.system(f"convert -delay 3 -loop 0 \"{frames}\" \"{output_file}\"")
+    os.system(f"convert -delay 3 -loop 0 \"{frames}\" -set dispose background \"{output_file}\"")
+
+def process_gif_512(args, tar):
+    frames, output_file = default_process(args, tar, "gif", "512")
+    if output_file is None: return
+    
+    # https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
+
+    frames=re.sub("%\d+d","*",frames)
+    print ("GIF limitations: delay is 30 ms instead of 33.333")
+    os.system(f"convert -delay 3 -loop 0 \"{frames}\" -set dispose background -resize 512x \"{output_file}\"")
 
 
 
