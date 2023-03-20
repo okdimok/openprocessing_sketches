@@ -56,27 +56,35 @@ def process_webm(args, tar, scale=512, dir_postfix=""):
     if output_file is None: return
     frames = f"'{frames}'"
     output_file = f"'{output_file}'"
+    vf = f"-vf scale={scale}:-1" if scale else ""
 
     os.system(f"ffmpeg -y -framerate 30 -f image2 -i {frames} \
             -c:v libvpx-vp9 -pix_fmt yuva420p \
-            {args.bandwidth} -pass 1 -vf scale={scale}:-1 -an -f null /dev/null && \
+            {args.bandwidth} -pass 1 {vf} -an -f null /dev/null && \
         ffmpeg -y -framerate 30 -f image2 -i {frames}\
              -c:v libvpx-vp9 -pix_fmt yuva420p \
-            {args.bandwidth} -pass 2 -vf scale={scale}:-1 {output_file}")
+            {args.bandwidth} -pass 2 {vf} {output_file}")
 
 def process_webm_emoji(args, tar, scale=100):
     process_webm(args, tar, scale, "emoji")
 
-def process_mp4(args, tar):
-    frames, output_file = default_process(args, tar, "mp4")
+def process_webm_orig(args, tar):
+    process_webm(args, tar, None, "orig")
+
+def process_mp4(args, tar, scale=512, dir_postfix=""):
+    frames, output_file = default_process(args, tar, "mp4", dir_postfix)
     if output_file is None: return
     frames = f"'{frames}'"
     output_file = f"'{output_file}'"
+    vf = f"-vf scale={scale}:-1" if scale else ""
     
     # https://trac.ffmpeg.org/wiki/Encode/H.264
     os.system(f"ffmpeg -y -framerate 30 -f image2 -i {frames} \
                 -c:v libx264 -crf {args.crf} -preset slow -tune animation -pix_fmt yuv420p \
-                -vf scale=512:-1 {output_file}")
+                {vf} {output_file}")
+
+def process_mp4_orig(args, tar):
+    process_mp4(args, tar, None, "orig")
 
 def process_webp(args, tar):
     frames, output_file = default_process(args, tar, "webp")
@@ -89,26 +97,21 @@ def process_webp(args, tar):
                 -vcodec libwebp -filter:v fps=fps=30 -lossless 1 -loop 0 \
                 -preset default -an -vsync 0 {output_file}")
 
-def process_gif(args, tar):
-    frames, output_file = default_process(args, tar, "gif")
+def process_gif(args, tar, additional_args="", dir_postfix=""):
+    frames, output_file = default_process(args, tar, "gif", dir_postfix)
     if output_file is None: return
     
     # https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
 
     frames=re.sub("%\d+d","*",frames)
     print ("GIF limitations: delay is 30 ms instead of 33.333")
-    os.system(f"convert -delay 3 -loop 0 \"{frames}\" -set dispose background \"{output_file}\"")
+    os.system(f"convert -delay 3 -loop 0 \"{frames}\" -set dispose background {additional_args} \"{output_file}\"")
 
 def process_gif_512(args, tar):
-    frames, output_file = default_process(args, tar, "gif", "512")
-    if output_file is None: return
-    
-    # https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
+    return process_gif(args, tar, "-resize 512x", "512")
 
-    frames=re.sub("%\d+d","*",frames)
-    print ("GIF limitations: delay is 30 ms instead of 33.333")
-    os.system(f"convert -delay 3 -loop 0 \"{frames}\" -set dispose background -resize 512x \"{output_file}\"")
-
+def process_gif_480h(args, tar):
+    return process_gif(args, tar, "-resize x480", "480h")
 
 
 def parse_args():

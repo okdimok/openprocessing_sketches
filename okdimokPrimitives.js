@@ -33,10 +33,14 @@ var okdimokPrimitives = function (sketch) {
         switch (sz){
             case "tgm":
                 return [512, 512];
+            case "reels":
+                return [1080, 1920];
             case "window":
                 return [s.windowWidth, s.windowHeight];
             case "screen":
                 return this.getScreenSize();
+            case "giphy":
+                return [480, 480];
             case "a2":
             case "a3":
             case "a4":
@@ -47,6 +51,17 @@ var okdimokPrimitives = function (sketch) {
                 return [sz, sz];
         }
 
+    }
+
+    this.showReelsMargins = function () {
+        // https://vistasocial.com/insights/instagram-reels-dimensions/#What-are-the-ideal-Instagram-Reels-dimensions-and-aspect-ratios?:~:text=Source%3A%20Instagram.com-,What%20are%20the%20ideal%20Instagram%20Reels%20dimensions%20and%20aspect%20ratios%3F,-If%20you%20want
+        s.fill("red")
+        s.rect(0, 0, 1080, 220)
+        s.fill("orange")
+        s.rect(0, 0, 35, 1920)
+        s.rect(1080-35, 0, 35, 1920)
+        s.fill("red")
+        s.rect(0, 1920-420, 1080, 420)
     }
 
 	// https://github.com/spite/ccapture.js/#:~:text=The%20complete%20list%20of%20parameters%20is%3A
@@ -571,9 +586,12 @@ var okdimokPrimitives = function (sketch) {
 
     this.add_default_behaviors = function(ctx, sketch, name) {
         let s = sketch;
-        name ??= "generative"
+        name ??= window.location.pathname.split('/').filter(a => a).filter(a => a != "index.html").slice(-1)[0]
         if (this.parsedHash.get("sz")) {
             name += "_" + this.parsedHash.get("sz");
+        }
+        if (this.parsedHash.get("ver")) {
+            name += "_" + this.parsedHash.get("ver");
         }
 
         s.captureNextLoop = function(){};

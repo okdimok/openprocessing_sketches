@@ -192,7 +192,10 @@ let hi_sticker = function ( sketch ) {
 	}
 
 	s.drawOnce = function(){
-		s.clear();
+		if (utils.parsedHash.get("ver") !== "margins") s.clear();
+		if (utils.parsedHash.get("ver") == "black") {
+			s.background("#000");
+		}
 		// s.background("#0f0");
 		// s.text(s.millis(), 0, 0)
 		// s.text(s.deltaTime, 0, 30)
@@ -204,6 +207,7 @@ let hi_sticker = function ( sketch ) {
 
     s.setup = function() {
         s.createCanvas(s.size_x, s.size_y);
+		s.pixelDensity(1);
         // s.drawBg();
         s.noStroke();
 		s.frameRate(s.fps);
@@ -214,8 +218,9 @@ let hi_sticker = function ( sketch ) {
 
 	s.drawFrame = function() {
 		s.clear()
+		if (utils.parsedHash.get("ver") == "margins") utils.showReelsMargins()
 		s.translate(0.75 * s.size_x, s.size_y/2)
-		s.scale(2)
+		s.scale(2*s.size_x/512)
 		s.stepDynamics();
 		s.drawOnce();
 	}
