@@ -193,9 +193,7 @@ let hi_sticker = function ( sketch ) {
 
 	s.drawOnce = function(){
 		if (utils.parsedHash.get("ver") !== "margins") s.clear();
-		if (utils.parsedHash.get("ver") == "black") {
-			s.background("#000");
-		}
+		if (utils.parsedHash.get("ver") == "black") s.background("#000");
 		// s.background("#0f0");
 		// s.text(s.millis(), 0, 0)
 		// s.text(s.deltaTime, 0, 30)

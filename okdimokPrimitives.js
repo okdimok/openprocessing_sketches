@@ -55,6 +55,7 @@ var okdimokPrimitives = function (sketch) {
 
     this.showReelsMargins = function () {
         // https://vistasocial.com/insights/instagram-reels-dimensions/#What-are-the-ideal-Instagram-Reels-dimensions-and-aspect-ratios?:~:text=Source%3A%20Instagram.com-,What%20are%20the%20ideal%20Instagram%20Reels%20dimensions%20and%20aspect%20ratios%3F,-If%20you%20want
+        s.rectMode(s.CORNER)
         s.fill("red")
         s.rect(0, 0, 1080, 220)
         s.fill("orange")

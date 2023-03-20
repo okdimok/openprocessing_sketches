@@ -135,6 +135,7 @@ let hearts_sticker = function ( sketch ) {
 		// s.background("#888");
 		s.resetMatrix()
 		s.translate(s.width/2, s.height/2)
+		s.scale(s.size_x/512)
 		// s.drawHeart()
 		hearts.draw();
 
@@ -152,6 +153,8 @@ let hearts_sticker = function ( sketch ) {
 
 	s.drawFrame = function() {
 		s.clear()
+		if (utils.parsedHash.get("ver") == "black") s.background("#000");
+		if (utils.parsedHash.get("ver") == "margins") utils.showReelsMargins()
 		s.stepDynamics();
 		s.drawOnce();
 	}

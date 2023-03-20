@@ -89,6 +89,8 @@ let armenia_planes = function ( sketch ) {
 
 	s.drawOnce = function(){
 		s.clear();
+		if (utils.parsedHash.get("ver") == "black") s.background("#000");
+		if (utils.parsedHash.get("ver") == "margins") utils.showReelsMargins()
 		// s.background("#000");
 		const rad = 2.;
 		const x_axis = new p5.Vector(1, 0, 0)
