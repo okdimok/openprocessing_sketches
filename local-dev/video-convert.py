@@ -77,9 +77,10 @@ def process_mp4(args, tar, scale=512, dir_postfix=""):
     frames = f"'{frames}'"
     output_file = f"'{output_file}'"
     vf = f"-vf scale={scale}:-1" if scale else ""
+    stream_loop = f"-stream_loop {args.stream_loop}" if args.stream_loop else ""
     
     # https://trac.ffmpeg.org/wiki/Encode/H.264
-    os.system(f"ffmpeg -y -framerate 30 -f image2 -i {frames} \
+    os.system(f"ffmpeg -y {stream_loop} -framerate 30 -f image2 -i {frames} \
                 -c:v libx264 -crf {args.crf} -preset slow -tune animation -pix_fmt yuv420p \
                 {vf} {output_file}")
 
@@ -120,6 +121,7 @@ def parse_args():
     parser.add_argument("-y", "--overwrite", help="if one should overwite the video", action="store_true")
     parser.add_argument("-b", "--bandwidth", help="ffmpeg bv for webm", type=str, default="-b:v 300k")
     parser.add_argument("--crf", help="ffmpeg crf for mp4", type=int, default=17)
+    parser.add_argument("-l", "--stream-loop", help="mp4: how many loops", type=int, default=0)
     # parser.add_argument("-m", "--ffmpeg-flags", help="additional ffmpeg flags", type=str)
     parser.add_argument("--frames-format", type=str, default="%07d.png")
     parser.add_argument("--frames", type=str, nargs="*")

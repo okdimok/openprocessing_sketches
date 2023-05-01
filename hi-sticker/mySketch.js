@@ -14,10 +14,15 @@ let hi_sticker = function ( sketch ) {
 	var gridSize = 30;
 	var drawables = [];
 
-	s.drawConcetric = function(p, rref, cref) {
+	s.drawConcetric = function(p, rref, cref, pass) {
 		let c = cref.copy();
 		let dr = 1, maxr = 1.5*rref, minr = 2 ;
 		let n = s.floor((maxr-minr)/dr);
+		if (utils.parsedHash.get("ver") == "gif" && pass == "pre") {
+			s.fill("#000");
+			s.circle(p.x, p.y, 2*maxr);
+			return 
+		}
 		c.setAlpha(1./n*2);
 		for (let i = minr; i < maxr; i+=dr) {
 			s.fill(c)
@@ -79,6 +84,12 @@ let hi_sticker = function ( sketch ) {
 			s.noFill();
 			this.beforeDraw();
 			this.path.display()
+			if (utils.parsedHash.get("ver") == "gif") {
+				for (var i = 0., j = 0; j < this.total_n; i+=1./this.total_n, j++) {
+					let p = this.path.getPosAtT(i + this.progress);
+					s.drawConcetric(p, this.rad*1.3, utils.newUnitColor(s.HSL, this.colors[j]), "pre")
+				}
+			}
 			for (var i = 0., j = 0; j < this.total_n; i+=1./this.total_n, j++) {
 				let p = this.path.getPosAtT(i + this.progress);
 				let c1 = this.colors[j], c2 = this.colors_shifted[j];
