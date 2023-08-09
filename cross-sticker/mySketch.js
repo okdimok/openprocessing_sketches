@@ -8,6 +8,9 @@ let cross_sticker = function ( sketch ) {
 	s.capture = true;
 	s.video_format = "png";
 	var loop = 3;
+	if (utils.parsedHash.get("ver") == "reels") {
+		loop = 15;
+	}
 	var colorPoints = [];
 	var fullscreen = false;
 	var mask;
@@ -86,8 +89,17 @@ let cross_sticker = function ( sketch ) {
 		// }
 	}
 
-	s.drawCross = function (img, color) {
+	s.drawOneCross = function (img) {
+		img.push()
 		let w = 0.1, l = 0.3;
+		img.rotate(-s.QUARTER_PI);
+		// img.translate(-3/gridSize, -1/gridSize);
+		img.rect(0, 0, 2*l+w, w);
+		img.rect(0, 0, w, 2*l+w);
+		img.pop()
+	}
+
+	s.drawCross = function (img, color) {
 		img.clear()
 		img.background("#0000")
 		img.noStroke();
@@ -96,16 +108,23 @@ let cross_sticker = function ( sketch ) {
 		img.scale(img.width);
 		img.translate(0.5, 0.5);
 		img.rectMode(s.CENTER);
-		img.rotate(-s.QUARTER_PI);
-		// img.translate(-3/gridSize, -1/gridSize);
-		img.rect(0, 0, 2*l+w, w);
-		img.rect(0, 0, w, 2*l+w);
+		
+		if (utils.parsedHash.get("ver") == "margins" || 
+			utils.parsedHash.get("ver") == "reels") {
+			img.translate(-0.1, 0.);
+			s.drawOneCross(img);
+			img.translate(0.2, 0.5);
+			s.drawOneCross(img);
+		} else {
+			s.drawOneCross(img);
+		}
 		img.pop()
 	}
 
 	s.drawOnce = function(){
 		s.clear();
 		// s.background("#000");
+		if (utils.parsedHash.get("ver") == "margins") utils.showReelsMargins()
 		s.drawGradientOnce(checkmark_fill);
 		checkmark_fill_img = checkmark_fill.get() 
 		checkmark_fill_img.mask( mask.get() );

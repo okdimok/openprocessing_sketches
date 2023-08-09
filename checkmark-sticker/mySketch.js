@@ -8,6 +8,9 @@ let checkmark_sticker = function ( sketch ) {
 	s.capture = true;
 	s.video_format = "png";
 	var loop = 3;
+	if (utils.parsedHash.get("ver") == "reels") {
+		loop = 15;
+	}
 	var colorPoints = [];
 	var fullscreen = false;
 	var mask;
@@ -86,15 +89,9 @@ let checkmark_sticker = function ( sketch ) {
 		// }
 	}
 
-	s.drawCheckmark = function (img, color) {
-		let w = 0.1, l1 = 0.3, l2=0.6;
-		img.clear()
-		img.background("#0000")
-		img.noStroke();
-		img.fill(color)
+	s.drawOneCheckmark = function (img) {
 		img.push()
-		img.scale(img.width);
-		img.translate(0.5, 0.5);
+		let w = 0.1, l1 = 0.3, l2=0.6;
 		img.rotate(-s.QUARTER_PI);
 		img.translate(-3/gridSize, -1/gridSize);
 		img.rect(-w, 0, l2, w);
@@ -102,9 +99,29 @@ let checkmark_sticker = function ( sketch ) {
 		img.pop()
 	}
 
+	s.drawCheckmark = function (img, color) {
+		img.clear()
+		img.background("#0000")
+		img.noStroke();
+		img.fill(color)
+		img.push()
+		img.scale(img.width);
+		img.translate(0.5, 0.5);
+		s.drawOneCheckmark(img);
+		if (utils.parsedHash.get("ver") == "margins" || 
+			utils.parsedHash.get("ver") == "reels") {
+			img.translate(0, 0.3);
+			s.drawOneCheckmark(img);
+			img.translate(0, 0.3);
+			s.drawOneCheckmark(img);
+		}
+		img.pop()
+	}
+
 	s.drawOnce = function(){
 		s.clear();
-		// s.background("#000");
+		if (utils.parsedHash.get("ver") == "reels") s.background("#000");
+		if (utils.parsedHash.get("ver") == "margins") utils.showReelsMargins()
 		s.drawGradientOnce(checkmark_fill);
 		checkmark_fill_img = checkmark_fill.get() 
 		checkmark_fill_img.mask( mask.get() );

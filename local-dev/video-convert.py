@@ -141,9 +141,11 @@ def run(args):
 
 
     if args.tars:
+        # print(args.format)
         for tar in args.tars:
             tar = process_tar(args, tar)
             for fmt in args.format:
+                # print(f"{fmt} — {tar}")
                 processor_name = f"process_{fmt}"
                 globals()[processor_name](args, tar)
     

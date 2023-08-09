@@ -516,7 +516,7 @@ var okdimokPrimitives = function (sketch) {
         }
 
         /**
-         * @return {p5.Vector[]} three Vectors of triangle vertices 
+         * @return {p5.Vector[]} three Vectors of triangle vertices, the center is at the h middle 
          */
         getTriangleVectors () {
             // console.assert(this.shift[0] == this.shift[1], this.shift)
@@ -530,12 +530,27 @@ var okdimokPrimitives = function (sketch) {
         }
 
         /**
-         * @return {float[]} six coordinates of triangle vertices 
+         * @return {float[]} six coordinates of triangle vertices, the center is at the h middle 
          */
         getTriangleVertices () {
             let [top, left, right] = this.getTriangleVectors()
             return [top.x, top.y, left.x, left.y, right.x, right.y]
         }
+
+        /**
+         * @return {float[]} six coordinates of triangle vertices, the center is at the triangle center 
+         */
+        getCenteredTriangleVertices () {
+            let a = this.shift[0] * 2
+            let h =  this.shift[0] * s.sqrt(3)
+            let top = new p5.Vector(0, h*2/3);
+            let av = new p5.Vector(0, a);
+            let left = p5.Vector.add(top, av.rotate(-5*s.PI/6))
+            let right = p5.Vector.add(top, av.rotate(-s.PI/3))
+            return [top.x, top.y, left.x, left.y, right.x, right.y]
+        }
+
+
 
 
     }

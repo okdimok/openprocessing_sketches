@@ -245,6 +245,7 @@ let wow_sticker = function ( sketch ) {
 		// s.text(s.deltaTime, 0, 30)
 		// s.scale(1./512., 1./512.)
 		s.scale(s.size_x, s.size_x)
+		s.scale(0.95, 0.95)
 		for (var d of Object.values(drawables)) {
 			d.draw()			
 		}
