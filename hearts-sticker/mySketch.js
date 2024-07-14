@@ -101,17 +101,17 @@ let hearts_sticker = function ( sketch ) {
 			s.push()
 			// s.background("#888")
 			// s.fill("#E1D22D");
-			// s.fill("#888");
+			s.fill("#888");
 			// s.fill("#A68");
-			// s.fill(s.getSinColorLoopColorAtT(this.t + s.PI));
-			// s.ellipse(0,0,s.width)
-			// s.fill("#888");
-			// s.ellipse(0,0,s.width-30)
+			s.fill(s.getSinColorLoopColorAtT(this.t + s.PI));
+			s.ellipse(0,0,s.width)
+			s.fill("#888");
+			s.ellipse(0,0,s.width-30)
 			s.translate(0, -40)
 			// s.drawHeart(this.final_scale*1.35)
 			this.draw_one_gradient(this.t, 1.015);
 			this.draw_one_gradient(this.t + this.total_phase_shift);
-			this.draw_text()
+			// this.draw_text()
 			// this.draw_future();
 			// s.fill(s.getSinColorLoopColorAtT(this.t))
 			// s.drawHeart()
