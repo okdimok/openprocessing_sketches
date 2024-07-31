@@ -17,6 +17,9 @@ let object_background_t_shirt = function ( sketch ) {
 			this.d = 60
 			this.a = this.d * 2
 			this.h = this.a * s.sqrt(3) /2
+			this.h = 512. / 4.
+			this.a = this.h / s.sqrt(3) * 2.
+			this.d = this.a / 2 
 			this.shifts_grid = new utils.Grid([-10, 10], [-this.ymax, this.ymax], [this.d, this.d]).prepareForTriangles()
 			this.shifts_grid_red = new utils.Grid([-10, 10], [-this.ymax, this.ymax], [this.d, this.d]).prepareForTriangles()
 			this.tween = p5.tween.manager.addTween(this)
@@ -74,9 +77,9 @@ let object_background_t_shirt = function ( sketch ) {
 		draw () {
 			s.push()
 			let inner_1 = "#00da00"
-			inner_1 = "#00da00"
+			inner_1 = "#05f"
 			let inner_2 = "#ff9900"
-			inner_2 = "#b08"
+			inner_2 = "#f80"
 			let stroke  = "#000"
 			if (this.enabled_grid_id >= 1 - 0.001) {
 				s.fill(inner_1)
