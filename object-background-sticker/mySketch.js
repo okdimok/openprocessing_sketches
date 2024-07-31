@@ -11,29 +11,39 @@ let object_background_t_shirt = function ( sketch ) {
 
 	class Triangles {
 		constructor(){
+			this.enabled_grid_id = 0
 			this.base_alpha = 0
 			this.ymax = 10
-			this.d = 40
+			this.d = 60
 			this.a = this.d * 2
 			this.h = this.a * s.sqrt(3) /2
-			this.shifts_grid = new utils.Grid([-40, 40], [0, this.ymax+2], [this.d, this.d]).prepareForTriangles()
-			this.shifts_grid_red = new utils.Grid([-40, 40], [-this.ymax-2, -1], [this.d, this.d]).prepareForTriangles()
+			this.shifts_grid = new utils.Grid([-10, 10], [-this.ymax, this.ymax], [this.d, this.d]).prepareForTriangles()
+			this.shifts_grid_red = new utils.Grid([-10, 10], [-this.ymax, this.ymax], [this.d, this.d]).prepareForTriangles()
 			this.tween = p5.tween.manager.addTween(this)
 				.setSketch(s)
 				.addMotionsSeconds([
 					{ key: 'base_alpha', target: 0 },
-				], s.loop*0.4, 'easeInOutQuad')
+					{ key: 'enabled_grid_id', target: 0 },
+					], s.loop*0.3, 'easeInOutQuad')
 				.addMotionsSeconds([
 					{ key: 'base_alpha', target: 3 },
-				], s.loop*0.2, 'easeInOutQuad')
+					{ key: 'enabled_grid_id', target: 0 },
+					], s.loop*0.15, 'easeInOutQuad')
+				.addMotionsSeconds([
+					{ key: 'base_alpha', target: 0 },
+					{ key: 'enabled_grid_id', target: 0 },
+					], s.loop*0.15, 'easeInOutQuad')
+				.addMotionsSeconds([
+					{ key: 'base_alpha', target: 0 },
+					{ key: 'enabled_grid_id', target: 1 },
+					], 0., 'easeInOutQuad')
 				.addMotionsSeconds([
 					{ key: 'base_alpha', target: -3 },
+					{ key: 'enabled_grid_id', target: 1 },
 				], s.loop*0.2, 'easeInOutQuad')
-				// .addLastMotions([
-				// 	{ key: 'base_alpha', target: -8.*2. },
-				// 	], 'easeInOutQuad')
 				.addLastMotions([
 					{ key: 'base_alpha', target: 0 },
+					{ key: 'enabled_grid_id', target: 1 },
 					], 'easeInOutQuad')
 				.startLoop();
 		}
@@ -46,20 +56,7 @@ let object_background_t_shirt = function ( sketch ) {
 				let rotate_from = 1;
 				let rotate_n = 4*2 // 4*2;
 				let rotate_angle = s.PI/3./rotate_n * base_alpha;
-				if (ij[1] > rotate_from) {
-					if (ij[1] < rotate_from + rotate_n){
-						s.rotate((ij[1] - rotate_from) * rotate_angle)
-					} else {
-						s.rotate(s.PI);
-					}
-				}
-				if (ij[1] < -rotate_from) {
-					if (ij[1] > -rotate_from - rotate_n) {
-						s.rotate((ij[1] + rotate_from) * rotate_angle)
-					} else {
-						s.rotate(s.PI);
-					}
-				}
+				s.rotate(rotate_angle);
 				let scale = 1.3;
 				s.push()
 				s.scale(scale)
@@ -81,14 +78,16 @@ let object_background_t_shirt = function ( sketch ) {
 			let inner_2 = "#ff9900"
 			inner_2 = "#b08"
 			let stroke  = "#000"
-			s.fill(inner_1)
-			s.rect(-s.size_x, -s.size_y, 2*s.size_x, s.size_y - this.h/3)
-			this.draw_one_set(this.shifts_grid_red, 0, inner_2, stroke)
-			s.translate(0, -this.h/3)
-			s.fill(inner_2)
-			s.rect(-s.size_x, -this.h/3, 2*s.size_x, s.size_y)
-			this.draw_one_set(this.shifts_grid, 1, inner_1, stroke)
-
+			if (this.enabled_grid_id >= 1 - 0.001) {
+				s.fill(inner_1)
+				s.rect(-s.size_x, -s.size_y, 2*s.size_x, 2*s.size_y)
+				this.draw_one_set(this.shifts_grid_red, 0, inner_2, stroke)
+			} else {
+				s.fill(inner_2)
+				s.rect(-s.size_x, -s.size_y, 2*s.size_x, 2*s.size_y)
+				s.translate(0, -this.h/3)			
+				this.draw_one_set(this.shifts_grid, 1, inner_1, stroke)
+			}
 			s.pop()
 		}
 
