@@ -26,21 +26,21 @@ let object_background_t_shirt = function ( sketch ) {
 					{ key: 'enabled_grid_id', target: 0 },
 					], s.loop*0.3, 'easeInOutQuad')
 				.addMotionsSeconds([
-					{ key: 'base_alpha', target: 3 },
+					{ key: 'base_alpha', target: 4 },
 					{ key: 'enabled_grid_id', target: 0 },
 					], s.loop*0.15, 'easeInOutQuad')
 				.addMotionsSeconds([
 					{ key: 'base_alpha', target: 0 },
 					{ key: 'enabled_grid_id', target: 0 },
-					], s.loop*0.15, 'easeInOutQuad')
+					], s.loop*0.15, 'easeInQuad')
 				.addMotionsSeconds([
 					{ key: 'base_alpha', target: 0 },
 					{ key: 'enabled_grid_id', target: 1 },
-					], 0., 'easeInOutQuad')
+					], s.loop*0.0, 'linear')
 				.addMotionsSeconds([
-					{ key: 'base_alpha', target: -3 },
+					{ key: 'base_alpha', target: -4 },
 					{ key: 'enabled_grid_id', target: 1 },
-				], s.loop*0.2, 'easeInOutQuad')
+				], s.loop*0.15, 'easeOutQuad')
 				.addLastMotions([
 					{ key: 'base_alpha', target: 0 },
 					{ key: 'enabled_grid_id', target: 1 },
@@ -57,7 +57,7 @@ let object_background_t_shirt = function ( sketch ) {
 				let rotate_n = 4*2 // 4*2;
 				let rotate_angle = s.PI/3./rotate_n * base_alpha;
 				s.rotate(rotate_angle);
-				let scale = 1.3;
+				let scale = 1;
 				s.push()
 				s.scale(scale)
 				s.fill(stroke)
