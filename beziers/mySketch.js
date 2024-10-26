@@ -7,86 +7,115 @@ let object_background_t_shirt = function ( sketch ) {
     let utils = new okdimokPrimitives(sketch);
         [s.size_x, s.size_y] = [400, 400];
 
-        s.fps = 1;
+        s.fps = 30;
         s.capture = false;
         s.video_format = "png";
         s.loop = 3;
 
-    function better_bezier(a1, c1, c2, a2) {
-      s.bezier(a1.x, a1.y, c1.x, c1.y, c2.x, c2.y, a2.x, a2.y);
+    function better_bezier(a1, c1, c2, a2, colorStart, colorEnd) {
+      let steps = 20;
+      s.noFill();
+      for (let i = 0; i < steps; i++) {
+        let t = i / (steps - 1);
+        let x = s.bezierPoint(a1.x, c1.x, c2.x, a2.x, t);
+        let y = s.bezierPoint(a1.y, c1.y, c2.y, a2.y, t);
+        let color = s.lerpColor(colorStart, colorEnd, t);
+        s.stroke(color);
+        s.point(x, y);
+      }
     }
 
         class Beziers {
                 constructor(){
-                        this.ymax = 10
+                        this.ymax = 10;
+                        this.randomSeed = s.random(10000);
                 }
-
 
                 draw () {
-                        s.push()
+                        s.push();
+                        s.randomSeed(this.randomSeed);
 
                         s.scale(1);
-                        s.noFill();
-                        s.stroke(0);
-                        s.strokeWeight(1);
+                        s.strokeWeight(2);
                         var shift = 0;
                         for (var line_n=0; line_n<400; line_n++) {
-                          var c1 = new p5.Vector(shift+15, s.noise(line_n)*10);
+                          // Combine shift with sine wave and noise
+                          var xShift = shift + s.sin(line_n / 20) * 20 + s.noise(line_n * 0.1) * 10;
+                          
+                          var c1 = new p5.Vector(
+                            xShift + 15 * s.noise(line_n, 0),
+                            s.noise(line_n) * 20
+                          );
+
+                          // Generate random base color for this line
+                          let baseHue = s.random(360);
+                          let baseSaturation = s.random(70, 100);
+                          let baseBrightness = s.random(80, 100); // Increased brightness range
+
                           for (var i=0; i<20; i++) {
-                            var a1 = new p5.Vector(shift, i*20);
-                            var a2 = new p5.Vector(shift, i*20+20);
-                            var c2 = new p5.Vector(shift+35*s.noise(line_n/5, i*20), i*20+5*s.noise(line_n/5, i*20, 300));
-                            better_bezier(a1, c1, c2, a2);
+                            var baseY = i * 20;
+                            var a1 = new p5.Vector(
+                              xShift + s.noise(line_n, i*20) * 10,
+                              baseY + s.noise(line_n, i*20, 100) * 10
+                            );
+                            var a2 = new p5.Vector(
+                              xShift + s.noise(line_n, i*20+20) * 10,
+                              baseY + 20 + s.noise(line_n, i*20+20, 200) * 10
+                            );
+                            var c2 = new p5.Vector(
+                              xShift + 35 * s.noise(line_n/5, i*20),
+                              baseY + 10 + s.noise(line_n/5, i*20, 300) * 15
+                            );
+
+                            // Create more dramatic hue changes within the line
+                            let hueShift = s.map(i, 0, 19, 0, 180); // Shift up to 180 degrees over the line
+                            let colorStart = s.color(
+                                (baseHue + hueShift) % 360,
+                                baseSaturation + s.random(-5, 5),
+                                baseBrightness + s.random(-5, 5)
+                            );
+                            let colorEnd = s.color(
+                                (baseHue + hueShift + s.random(30, 60)) % 360,
+                                baseSaturation + s.random(-5, 5),
+                                baseBrightness + s.random(-5, 5)
+                            );
+
+                            better_bezier(a1, c1, c2, a2, colorStart, colorEnd);
                             c1 = mirror(c2, a2);
                           }
+                          // Keep the original shift update
                           shift += s.sqrt((s.sin(line_n / 20 * 2 * s.PI * 2) + 1.2)) * 5;
-                          console.log(shift)
                         }
-                        // s.stroke("red");
-                        // s.point(c1)
-                        // s.point(c2)
-                        // s.point(c3)
-                        // s.point(mirror(c2, a2))
-                        // s.stroke("blue");
-                        // s.point(a1)
-                        // s.point(a2)
-                        // s.point(a3)
 
-                        s.pop()
+                        s.pop();
                 }
-
         }
         var beziers = new Beziers();
 
-        s.drawBg = function() { s.background("white"); }
+        s.drawBg = function() { s.background(10); } // Even darker background for more contrast
 
         s.prepareNewSeeds = function(){
                 beziers = new Beziers();
         }
 
-
         s.drawOnce = function(){
-                s.drawBg()
-                s.resetMatrix()
-                // s.translate(100, 100)
+                s.drawBg();
+                s.resetMatrix();
                 beziers.draw();
-                s.noLoop()
         }
 
     s.setup = function() {
         s.createCanvas(s.size_x, s.size_y);
         s.noStroke();
-                // s.frameRate(s.fps);
-                // s.createLoop(s.loop);
-                s.prepareNewSeeds();
-
+        s.colorMode(s.HSB, 360, 100, 100);
+        s.prepareNewSeeds();
+        s.drawOnce();
+        s.noLoop(); // Stop the draw loop after initial render
     }
 
         s.drawFrame = function() {
-                s.clear()
-                s.drawOnce();
+                // This function is no longer needed for static image
         }
 
         utils.add_default_behaviors(this, s);
-
 }

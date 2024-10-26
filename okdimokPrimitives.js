@@ -343,7 +343,7 @@ var okdimokPrimitives = function (sketch) {
         
         step_impl(millis) {
             let elapsed_s = millis/1000;
-            console.assert(frame_s !== undefined);
+            // console.assert(frame_s !== undefined);
             this.q.x = this.qinit.x + s.map(s.noise(elapsed_s/this.tempo, this.seed), 0, 1, -1, 1)*this.sz.x;
             this.q.y = this.qinit.y + s.map(s.noise(elapsed_s/this.tempo, this.seed, this.seed2), 0, 1, -1, 1)*this.sz.y;
         }
