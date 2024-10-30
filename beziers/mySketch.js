@@ -49,8 +49,8 @@ let object_background_t_shirt = function ( sketch ) {
                             s.noise(line_n) * 240  // Increased vertical range
                           );
 
-                          // Generate random base color for this line (yellow to red)
-                          let baseHue = s.random(0, 60);  // 0 to 60 covers red to yellow
+                          // Generate random base color for this line (full spectrum)
+                          let baseHue = s.random(360);  // Full 360-degree hue range
                           let baseSaturation = s.random(70, 100);
                           let baseBrightness = s.random(80, 100);
 
@@ -69,15 +69,15 @@ let object_background_t_shirt = function ( sketch ) {
                               baseY + 10 + s.noise(line_n/5, i*20, 300) * 180  // Increased vertical range
                             );
 
-                            // Create color variations within the yellow-red spectrum
-                            let hueShift = s.map(i, 0, 19, 0, 60);
+                            // Create more dramatic color variations
+                            let hueShift = s.map(i, 0, 19, 0, 180);  // Larger hue shift range
                             let colorStart = s.color(
-                              (baseHue + hueShift) % 60,  // Keep within 0-60 range
+                              (baseHue + hueShift) % 360,  // Use full 360-degree range
                               baseSaturation + s.random(-5, 5),
                               baseBrightness + s.random(-5, 5)
                             );
                             let colorEnd = s.color(
-                              (baseHue + hueShift + s.random(10, 30)) % 60,  // Smaller shift, still within 0-60
+                              (baseHue + hueShift + s.random(30, 60)) % 360,  // More dramatic color transitions
                               baseSaturation + s.random(-5, 5),
                               baseBrightness + s.random(-5, 5)
                             );
