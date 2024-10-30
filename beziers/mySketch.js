@@ -12,8 +12,8 @@ let object_background_t_shirt = function ( sketch ) {
         s.video_format = "png";
         s.loop = 3;
 
-    function better_bezier(a1, c1, c2, a2, colorStart, colorEnd) {
-      let steps = 20;
+    function better_bezier(a1, c1, c2, a2, colorStart, colorEnd, strokeWeight) {
+      let steps = 100;  // Increased from 20 to 40 for more points
       s.noFill();
       for (let i = 0; i < steps; i++) {
         let t = i / (steps - 1);
@@ -21,6 +21,7 @@ let object_background_t_shirt = function ( sketch ) {
         let y = s.bezierPoint(a1.y, c1.y, c2.y, a2.y, t);
         let color = s.lerpColor(colorStart, colorEnd, t);
         s.stroke(color);
+        s.strokeWeight(strokeWeight);
         s.point(x, y);
       }
     }
@@ -28,63 +29,68 @@ let object_background_t_shirt = function ( sketch ) {
         class Beziers {
                 constructor(){
                         this.ymax = 10;
-                        this.randomSeed = s.random(10000);
+                        // Use current time to seed the random number generator
+                        this.randomSeed = Date.now();
                 }
 
                 draw () {
                         s.push();
                         s.randomSeed(this.randomSeed);
+                        s.noiseSeed(this.randomSeed);
 
                         s.scale(1);
-                        s.strokeWeight(2);
-                        var shift = 0;
-                        for (var line_n=0; line_n<400; line_n++) {
-                          // Combine shift with sine wave and noise
-                          var xShift = shift + s.sin(line_n / 20) * 20 + s.noise(line_n * 0.1) * 10;
+                        var shift = -40;
+                        // Reduce the number of lines to approximately 50
+                        for (var line_n = 0; line_n < 50; line_n++) {
+                          var xShift = shift + s.noise(line_n * 0.3) * 80;
                           
                           var c1 = new p5.Vector(
-                            xShift + 15 * s.noise(line_n, 0),
-                            s.noise(line_n) * 20
+                            xShift + 180 * s.noise(line_n, 0),  // Increased influence of noise
+                            s.noise(line_n) * 240  // Increased vertical range
                           );
 
-                          // Generate random base color for this line
-                          let baseHue = s.random(360);
+                          // Generate random base color for this line (yellow to red)
+                          let baseHue = s.random(0, 60);  // 0 to 60 covers red to yellow
                           let baseSaturation = s.random(70, 100);
-                          let baseBrightness = s.random(80, 100); // Increased brightness range
+                          let baseBrightness = s.random(80, 100);
 
-                          for (var i=0; i<20; i++) {
-                            var baseY = i * 20;
+                          for (var i=0; i<20; i++) {  // Increased from 10 to 20 segments per line
+                            var baseY = i * 20 - 40;  // Adjusted spacing between segments
                             var a1 = new p5.Vector(
-                              xShift + s.noise(line_n, i*20) * 10,
-                              baseY + s.noise(line_n, i*20, 100) * 10
+                              xShift + s.noise(line_n, i*20) * 120,  // Increased horizontal range
+                              baseY + s.noise(line_n, i*20, 100) * 120  // Increased vertical range
                             );
                             var a2 = new p5.Vector(
-                              xShift + s.noise(line_n, i*20+20) * 10,
-                              baseY + 20 + s.noise(line_n, i*20+20, 200) * 10
+                              xShift + s.noise(line_n, i*20+20) * 120,  // Increased horizontal range
+                              baseY + 20 + s.noise(line_n, i*20+20, 200) * 120  // Increased vertical range
                             );
                             var c2 = new p5.Vector(
-                              xShift + 35 * s.noise(line_n/5, i*20),
-                              baseY + 10 + s.noise(line_n/5, i*20, 300) * 15
+                              xShift + 320 * s.noise(line_n/5, i*20),  // Increased influence of noise
+                              baseY + 10 + s.noise(line_n/5, i*20, 300) * 180  // Increased vertical range
                             );
 
-                            // Create more dramatic hue changes within the line
-                            let hueShift = s.map(i, 0, 19, 0, 180); // Shift up to 180 degrees over the line
+                            // Create color variations within the yellow-red spectrum
+                            let hueShift = s.map(i, 0, 19, 0, 60);
                             let colorStart = s.color(
-                                (baseHue + hueShift) % 360,
-                                baseSaturation + s.random(-5, 5),
-                                baseBrightness + s.random(-5, 5)
+                              (baseHue + hueShift) % 60,  // Keep within 0-60 range
+                              baseSaturation + s.random(-5, 5),
+                              baseBrightness + s.random(-5, 5)
                             );
                             let colorEnd = s.color(
-                                (baseHue + hueShift + s.random(30, 60)) % 360,
-                                baseSaturation + s.random(-5, 5),
-                                baseBrightness + s.random(-5, 5)
+                              (baseHue + hueShift + s.random(10, 30)) % 60,  // Smaller shift, still within 0-60
+                              baseSaturation + s.random(-5, 5),
+                              baseBrightness + s.random(-5, 5)
                             );
 
-                            better_bezier(a1, c1, c2, a2, colorStart, colorEnd);
-                            c1 = mirror(c2, a2);
+                            // Generate random stroke weight for each segment, uncorrelated with y
+                            let strokeWeight = s.random(1.5, 8);  // Slightly reduced max stroke weight
+
+                            better_bezier(a1, c1, c2, a2, colorStart, colorEnd, strokeWeight);
+                            
+                            // Adjust the mirroring to create more dramatic curves
+                            c1 = mirror(c2, a2).add(s.createVector(s.random(-40, 40), s.random(-40, 40)));
                           }
-                          // Keep the original shift update
-                          shift += s.sqrt((s.sin(line_n / 20 * 2 * s.PI * 2) + 1.2)) * 5;
+                          shift += s.sqrt((s.sin(line_n / 3 * s.PI * 2) + 1.2)) * 40;
                         }
 
                         s.pop();
