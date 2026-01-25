@@ -87,32 +87,40 @@ let time_reversed = function(sketch) {
             }
         }
 
-        drawTopFrame() {
+        drawFrame() {
+            // One closed curve: top-left -> top-right -> neck right -> bottom-right -> bottom-left -> neck left -> (closed)
+            let tl = [-this.width/2 - this.strokeWidth/2, -this.height/2 - this.strokeWidth/2];
+            let tr = [this.width/2 + this.strokeWidth/2, -this.height/2 - this.strokeWidth/2];
+            let nr = [this.neckWidth/2 + this.strokeWidth/2, 0];
+            let br = [this.width/2 + this.strokeWidth/2, this.height/2 + this.strokeWidth/2];
+            let bl = [-this.width/2 - this.strokeWidth/2, this.height/2 + this.strokeWidth/2];
+            let nl = [-this.neckWidth/2 - this.strokeWidth/2, 0];
+
+            // Black outline
+            s.stroke(0, 0, 0);
+            s.strokeWeight(this.strokeWidth + 4);
+            s.noFill();
+            s.beginShape();
+            s.vertex(tl[0], tl[1]);
+            s.vertex(tr[0], tr[1]);
+            s.vertex(nr[0], nr[1]);
+            s.vertex(br[0], br[1]);
+            s.vertex(bl[0], bl[1]);
+            s.vertex(nl[0], nl[1]);
+            s.endShape(s.CLOSE);
+
+            // Main frame
             s.stroke(200);
             s.strokeWeight(this.strokeWidth);
             s.noFill();
-
-            // Top triangle
             s.beginShape();
-            s.vertex(-this.neckWidth/2 - this.strokeWidth/2, 0);               // Bottom left (neck)
-            s.vertex(-this.width/2 - this.strokeWidth/2, -this.height/2 - this.strokeWidth/2);    // Top left
-            s.vertex(this.width/2 + this.strokeWidth/2, -this.height/2 - this.strokeWidth/2);    // Top right
-            s.vertex(this.neckWidth/2 + this.strokeWidth/2, 0);               // Bottom right (neck)
-            s.endShape();
-        }
-
-        drawBottomFrame() {
-            s.stroke(200);
-            s.strokeWeight(this.strokeWidth);
-            s.noFill();
-
-            // Bottom triangle
-            s.beginShape();
-            s.vertex(-this.neckWidth/2 - this.strokeWidth/2, 0);               // Top left (neck)
-            s.vertex(-this.width/2 - this.strokeWidth/2, this.height/2 + this.strokeWidth/2);    // Bottom left
-            s.vertex(this.width/2 + this.strokeWidth/2, this.height/2 + this.strokeWidth/2);    // Bottom right
-            s.vertex(this.neckWidth/2 + this.strokeWidth/2, 0);               // Top right (neck)
-            s.endShape();
+            s.vertex(tl[0], tl[1]);
+            s.vertex(tr[0], tr[1]);
+            s.vertex(nr[0], nr[1]);
+            s.vertex(br[0], br[1]);
+            s.vertex(bl[0], bl[1]);
+            s.vertex(nl[0], nl[1]);
+            s.endShape(s.CLOSE);
         }
 
         drawFallingParticles() {
@@ -138,8 +146,7 @@ let time_reversed = function(sketch) {
             this.updateFallingParticles();
             this.drawFallingParticles();
             this.drawSandParticles();
-            this.drawTopFrame();
-            this.drawBottomFrame();
+            this.drawFrame();
             s.pop();
         }
 
@@ -215,14 +222,32 @@ let time_reversed = function(sketch) {
         s.resetMatrix();
         hourglass.draw();
         
-        // Update "ОЖИДАЙТЕ" text
+        // "ОЖИДАЙТЕ" text on semi-transparent rounded rectangle
         s.push();
-        s.fill(200);
-        s.noStroke();
-        s.textAlign(s.CENTER, s.CENTER);
         s.textFont('Times New Roman');
+        s.textStyle(s.BOLD);
         s.textSize(s.size_y * 0.12);
-        s.text("ОЖИДАЙТЕ", s.width/2, s.height - s.size_y * 0.12);
+        let txt = "ОЖИДАЙТЕ";
+        let tw = s.textWidth(txt);
+        let th = s.textAscent() + s.textDescent();
+        let padX = tw * 0.1;
+        let padY = th * 0.2;
+        let boxW = tw + padX * 2;
+        let boxH = th + padY * 2;
+        let cx = s.width / 2;
+        let cy = s.height - s.size_y * 0.12;
+        let radius = s.min(boxW, boxH) * 0.25;
+
+        // Semi-transparent grey rounded rectangle
+        s.noStroke();
+        s.fill(0, 0, 70, 55);
+        s.rectMode(s.CENTER);
+        s.rect(cx, cy - padY * 0.5, boxW, boxH, radius);
+
+        // Text on top
+        s.fill(200);
+        s.textAlign(s.CENTER, s.CENTER);
+        s.text(txt, cx, cy);
         s.pop();
     }
 
