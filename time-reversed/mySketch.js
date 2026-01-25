@@ -23,23 +23,22 @@ let time_reversed = function(sketch) {
             this.sandProps = {
                 topLevel: 1,
                 bottomLevel: 0,
-                direction: 1  // 1 for down, -1 for up
+                direction: 1,  // 1 for down (no flow during rotation: topLevel=0)
+                rotation: 0    // 0 to PI: 180° flip around center in second half
             };
 
             this.tween = p5.tween.manager.addTween(this.sandProps)
                 .setSketch(s)
+                .addMotionsSeconds([
+                    { key: 'rotation', target: 0 }
+                ], 0, 'linear')
                 .addMotionsSeconds([
                     { key: 'topLevel', target: 0 },
                     { key: 'bottomLevel', target: 1 },
                     { key: 'direction', target: 1 }
                 ], s.loop/2, 'easeInOutQuad')
                 .addMotionsSeconds([
-                    { key: 'direction', target: -1 }
-                ], 0, 'linear')
-                .addMotionsSeconds([
-                    { key: 'topLevel', target: 1 },
-                    { key: 'bottomLevel', target: 0 },
-                    { key: 'direction', target: -1 }
+                    { key: 'rotation', target: s.PI }
                 ], s.loop/2, 'easeInOutQuad')
                 .startLoop();
         }
@@ -143,6 +142,7 @@ let time_reversed = function(sketch) {
             s.push();
             s.translate(s.width/2, s.height/2 - s.size_y * 0.1);
             s.scale(0.9);
+            s.rotate(this.sandProps.rotation);
             this.updateFallingParticles();
             this.drawFallingParticles();
             this.drawSandParticles();
@@ -161,7 +161,7 @@ let time_reversed = function(sketch) {
                 for (let y = -this.height/2; y < -this.height/2 + topHeight; y += 1) {
                     let progress = (y - (-this.height/2)) / (this.height/2);
                     let width = s.lerp(this.width, this.neckWidth, progress);
-                    let hue = s.map(y, -this.height/2, -this.height/2 + topHeight, 30, 15);
+                    let hue = s.map(y, -this.height/2, -this.height/2 + topHeight, 15, 30);
                     
                     s.fill(hue, 90, 90);
                     s.beginShape();
@@ -240,7 +240,7 @@ let time_reversed = function(sketch) {
 
         // Semi-transparent grey rounded rectangle
         s.noStroke();
-        s.fill(0, 0, 70, 55);
+        s.fill(0, 0, 30, 85);
         s.rectMode(s.CENTER);
         s.rect(cx, cy - padY * 0.5, boxW, boxH, radius);
 
